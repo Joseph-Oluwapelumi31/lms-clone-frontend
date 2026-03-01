@@ -1,6 +1,53 @@
+import { TypeAnimation } from "react-type-animation";
 
-
-export default function Login() {
+const Login = () => {
   return (
-    <div>login</div>
-    )}
+    <>
+    <div className=" flex justify-center  h-screen p-8">
+      <div className="w-full max-w-md ">
+        <h2  className="lg:hidden text-2xl font-bold text-[#212529] mb-8">YOKLMS</h2>
+        <h1 className="block lg:hidden text-2xl font-bold text-[#212529] mb-4">
+          
+          <TypeAnimation
+              sequence={[
+                "Hi, Welcome Back!👏",
+                1500,
+                "Hi, Welcome Back!👏",
+                1500,
+                
+              ]}
+              speed={55}
+              repeat={Infinity}
+              wrapper="span"
+              cursor={true}
+            />
+        </h1>
+        <h1 className="lg:block hidden text-2xl font-bold text-[#212529] mb-4">
+          Hi, Welcome Back!👏
+        </h1>
+        <p className="text-[#6c757d] mb-8">Hello again, you've been missed!</p>
+
+        <form action="" className="flex flex-col gap-4">
+          <div className="flex flex-col">
+            <label htmlFor="matric-number" className="font-bold mb-2 text-[#6c757d]">Matric Number</label>
+            <input type="text" id="matric-number" className="border border-gray-300 rounded-xl p-4" name="matric-number" placeholder="Enter Matric Number"/>
+          </div>
+          <div className="flex flex-col">
+            <label htmlFor="password" className="font-bold mb-2 text-[#6c757d]">Password</label>
+            <input type="password" id="password" className="border border-gray-300 rounded-xl p-4  text-[#212529]" name="password" placeholder="Enter Password"/>
+          </div>
+
+          <div className="flex gap-1">
+            <input type="checkbox" id="remember-me" name="remember-me" />
+            <label htmlFor="remember-me" className="font-bold  text-[#6c757d]">Remember me</label>
+          </div>
+          <button type="submit" className=" bg-[#22223E] text-white font-bold rounded-xl shadow-xl h-12 cursor-pointer hover:bg-[#1a1a2e] p-2 mt-4">Login</button>
+        </form>
+      </div>
+    </div>
+      
+    </>
+  )
+}
+
+export default Login
