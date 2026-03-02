@@ -1,1 +1,10 @@
+@config "../tailwind.config.js";
 @import "tailwindcss";
+
+:root {
+  --color-primary: #212529;
+  --color-accent: #4f46e5;
+  --color-muted: #6c757d;
+  --color-bg: #22223E;
+  --color-text: #212529;
+}

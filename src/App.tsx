@@ -13,6 +13,7 @@ import Calender from "./pages/Calender";
 import Attendance from "./pages/Attendance";
 import { Assignment } from "./pages/Assignment";
 import NotFound from "./pages/NotFound";
+import Academics from "./pages/Academics";
 
 
 export default function App() {
@@ -33,6 +34,7 @@ export default function App() {
           <Route path="/calender" element={<Calender />} />
           <Route path="/attendance" element={<Attendance />} />
           <Route path="/assignment" element={<Assignment />} />
+          <Route path="/academics" element={<Academics />} />
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
