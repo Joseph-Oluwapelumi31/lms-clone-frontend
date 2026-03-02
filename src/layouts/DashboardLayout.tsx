@@ -14,7 +14,7 @@ export default function DashboardLayout() {
       <div className="lg:grid lg:grid-cols-5 lg:gap-2">
         {/* Sidebar: desktop only */}
         <aside className={`lg:block lg:col-span-1  bg-white ${isOpen ? 'block' : 'hidden'} fixed top-0 left-0 z-50 h-screen w-72 bg-white shadow-lg` } >
-          <Sidebar isOpen={isOpen} />
+          <Sidebar />
         </aside>
 
         {/* Main */}

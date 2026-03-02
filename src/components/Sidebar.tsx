@@ -2,12 +2,9 @@ import Logo from "./Logo"
 import {Link} from "react-router-dom"
 import {  LogOut , Heart ,MessageSquareMore ,Bell, GraduationCap, UserRound, NotebookText, Home,} from "lucide-react" 
 
-type SidebarProps = {
-    // Define any props if needed
-    isOpen: boolean;
-}
 
-const Sidebar = ({ isOpen }: SidebarProps) => {
+
+const Sidebar = () => {
   return (
     <aside className=" h-full bg-white p-4">
         <Logo />
