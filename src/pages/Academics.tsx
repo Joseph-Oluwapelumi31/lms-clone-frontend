@@ -29,7 +29,7 @@ const Academics = () => {
             <div className="p-4 rounded-full bg-[#4ECDC4]">
               <Calendar className="h-10 w-10 text-white" />
             </div>
-            <h2 className="text-text font-bold text-lg md:text-xl mb-2">Assignment</h2>
+            <h2 className="text-text font-bold text-lg md:text-xl mb-2">Calender</h2>
           </div>        
         </Link>
         <Link to="/assignment" >
@@ -37,7 +37,7 @@ const Academics = () => {
             <div className="p-4 rounded-full bg-[#A8E6CF]">
               <Trophy className="h-10 w-10 text-white" />
             </div>
-            <h2 className="text-text font-bold text-lg md:text-xl mb-2">Assignment</h2>
+            <h2 className="text-text font-bold text-lg md:text-xl mb-2">Results</h2>
           </div>        
         </Link>
         <Link to="/assignment" >
@@ -45,7 +45,7 @@ const Academics = () => {
             <div className="p-4 rounded-full bg-gradient-to-br from-[#FF9F43] to-[#FF6B6B]">
               <UserRoundCheck className="h-10 w-10 text-white" />
             </div>
-            <h2 className="text-text font-bold text-lg md:text-xl mb-2">Assignment</h2>
+            <h2 className="text-text font-bold text-lg md:text-xl mb-2">Attendance</h2>
           </div>        
         </Link>
       </div>
