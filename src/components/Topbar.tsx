@@ -1,4 +1,5 @@
 import { Bell, Search} from "lucide-react" 
+import { Link } from "react-router-dom"
 
 type TopbarProps = {
     isOpen: boolean;
@@ -26,10 +27,13 @@ const Topbar = ({  toggleDropdown }: TopbarProps) => {
             </div>
             <div className="flex items-center gap-2">
                 <Search className="w-10 h-10  bg-slate-50 p-2 rounded-full" />
-                <div className="relative">
-                    <Bell className="w-10 h-10 bg-slate-50 p-2 rounded-full" />
-                    <span className="bg-red-600 p-2 rounded-full absolute -top-1 -right-1 text-xs h-3 w-3 text-white"></span>
-                </div>
+                <Link to="/notification" className="relative">
+                    <div className="relative">
+                        <Bell className="w-10 h-10 bg-slate-50 p-2 rounded-full" />
+                        <span className="bg-red-600  rounded-full absolute -top-1 -right-1 text-xs h-2 w-2 text-white"></span>
+                    </div>
+                </Link>
+                
             </div>
 
         </section>
