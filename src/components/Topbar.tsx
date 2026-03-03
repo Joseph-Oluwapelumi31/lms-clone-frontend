@@ -5,7 +5,7 @@ type TopbarProps = {
     toggleDropdown: () => void;
 }
 
-const Topbar = ({ isOpen, toggleDropdown }: TopbarProps) => {
+const Topbar = ({  toggleDropdown }: TopbarProps) => {
 
     
   return (
@@ -21,7 +21,7 @@ const Topbar = ({ isOpen, toggleDropdown }: TopbarProps) => {
                 </div>
                 <div>
                     <p className="text-xs  text-muted">Good Day,</p>
-                    <h2 className="text-text font-bold">JOSEPH{isOpen ? " (Open)" : " (Closed)"}</h2>
+                    <h2 className="text-text font-bold">JOSEPH</h2>
                 </div>
             </div>
             <div className="flex items-center gap-2">

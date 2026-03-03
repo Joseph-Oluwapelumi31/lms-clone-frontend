@@ -14,6 +14,7 @@ import Attendance from "./pages/Attendance";
 import { Assignment } from "./pages/Assignment";
 import NotFound from "./pages/NotFound";
 import Academics from "./pages/Academics";
+import Dashboard from "./pages/Dashboard";
 
 
 export default function App() {
@@ -24,7 +25,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
         </Route>
         <Route element={<DashboardLayout />}>
-          <Route path="/dashboard" element={<div>dashboard</div>} />
+          <Route path="/dashboard" element={<Dashboard/>} />
           <Route path="/courses" element={<Courses />} />
           <Route path="/results" element={<Results />} />
           <Route path="/profile" element={<Profile />} />
