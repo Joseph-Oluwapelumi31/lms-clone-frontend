@@ -37,7 +37,7 @@ export default function DashboardLayout() {
 
       {/* BottomNav: mobile/tablet only */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 z-50 h-14  bg-white">
-        <BottomNav />
+        <BottomNav closeSidebar={closeSideBar}/>
       </div>
     </div>
   );
