@@ -1,6 +1,8 @@
 import Logo from "./Logo"
 import {NavLink} from "react-router-dom"
 import { X ,LogOut , Heart ,MessageSquareMore ,Bell, GraduationCap, UserRound, NotebookText, Home,} from "lucide-react" 
+import { useAuth } from "../hooks/useAuth"
+import { useNavigate } from "react-router-dom"
 
 type Props = {
     isOpen: boolean;
@@ -10,6 +12,12 @@ type Props = {
 }
 
 const Sidebar = ({isOpen, closeSideBar}: Props) => {
+    const {logout} = useAuth()
+    const navigate = useNavigate()
+    const handleLogout =async ()=>{
+       await logout()
+       navigate('/logout')
+    }
   return (
     <>
     <div
@@ -69,13 +77,13 @@ const Sidebar = ({isOpen, closeSideBar}: Props) => {
                         <span>Profile</span>
                     </NavLink>
                 </li>
-                <li>
-                    <NavLink to="/" className="text-[#dc3545] font-medium hover:bg-muted/10 rounded-lg px-4 py-3 flex items-center">
-                        <LogOut className="w-5 h-5 inline mr-4 " />
-                        <span>Logout</span>
-                    </NavLink>
-                </li> 
-            </ul>  
+                
+                <button onClick={handleLogout} className="text-[#dc3545] font-medium hover:bg-muted/10 rounded-lg px-4 py-3 flex items-center">
+                    <LogOut className="w-5 h-5 inline mr-4 " />
+                    <span>Logout</span>
+                </button>
+                
+            </ul> 
         </nav>
     </aside>
     </>

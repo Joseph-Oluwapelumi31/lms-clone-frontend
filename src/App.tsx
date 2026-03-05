@@ -15,6 +15,8 @@ import { Assignment } from "./pages/Assignment";
 import NotFound from "./pages/NotFound";
 import Academics from "./pages/Academics";
 import Dashboard from "./pages/Dashboard";
+import ProtectedLayout from "./layouts/ProtectedLayout";
+import Register from './pages/Register'
 
 
 export default function App() {
@@ -23,19 +25,22 @@ export default function App() {
       <Routes>
         <Route element={<AuthLayout />}>
           <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Route>
-        <Route element={<DashboardLayout />}>
-          <Route path="/dashboard" element={<Dashboard/>} />
-          <Route path="/courses" element={<Courses />} />
-          <Route path="/results" element={<Results />} />
-          <Route path="/profile" element={<Profile />} />
-          <Route path="/notification" element={<Notification />} />
-          <Route path="/forum" element={<Forum />} />
-          <Route path="/enrollment" element={<Enrollment />} />
-          <Route path="/calender" element={<Calender />} />
-          <Route path="/attendance" element={<Attendance />} />
-          <Route path="/assignment" element={<Assignment />} />
-          <Route path="/academics" element={<Academics />} />
+        <Route element={<ProtectedLayout />}>
+          <Route element={<DashboardLayout />}>
+            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/courses" element={<Courses />} />
+            <Route path="/results" element={<Results />} />
+            <Route path="/profile" element={<Profile />} />
+            <Route path="/notification" element={<Notification />} />
+            <Route path="/forum" element={<Forum />} />
+            <Route path="/enrollment" element={<Enrollment />} />
+            <Route path="/calender" element={<Calender />} />
+            <Route path="/attendance" element={<Attendance />} />
+            <Route path="/assignment" element={<Assignment />} />
+            <Route path="/academics" element={<Academics />} />
+          </Route>
         </Route>
         <Route path="*" element={<NotFound />} />
       </Routes>
