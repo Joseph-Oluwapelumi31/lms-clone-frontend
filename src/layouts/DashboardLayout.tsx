@@ -5,7 +5,7 @@ import BottomNav from "../components/BottomNav";
   import { useState } from "react";
 
 export default function DashboardLayout() {
-    const [isOpen, setIsOpen] = useState<boolean>(true);
+    const [isOpen, setIsOpen] = useState<boolean>(false);
     const toggleDropdown = () => {
         setIsOpen((prev) => !prev);
     }
@@ -13,12 +13,13 @@ export default function DashboardLayout() {
         setIsOpen(false);
     }
 
+
   return (
     <div className="min-h-screen bg-slate-50">
       <div className="lg:grid lg:grid-cols-5 lg:gap-4">
         {/* Sidebar: desktop only */}
         <aside className={`lg:block lg:col-span-1  bg-white ${isOpen ? 'block' : 'hidden'}  top-0 left-0 z-50 h-screen w-full bg-white shadow-lg` } >
-          <Sidebar isOpen={isOpen} closeSideBar={closeSideBar} />
+          <Sidebar isOpen={isOpen} closeSideBar={closeSideBar}/>
         </aside>
 
         {/* Main */}
@@ -41,4 +42,8 @@ export default function DashboardLayout() {
       </div>
     </div>
   );
-}
+  
+};
+
+
+
