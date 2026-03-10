@@ -2,18 +2,13 @@ import { Outlet } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import Topbar from "../components/Topbar";
 import BottomNav from "../components/BottomNav";
-import { useState , useEffect} from "react";
-import type { Course } from "../types/instructorDashboard";
-import { api } from "../lib/api";
+import { useState } from "react";
 
 
-type CoursesResponse = {
-  data: Course[];
-};
+
 
 export default function DashboardLayout() {
     const [isOpen, setIsOpen] = useState<boolean>(false);
-    const [courses, setCourses] = useState<Course[]>([]);
 
     const toggleDropdown = () => {
         setIsOpen((prev) => !prev);
@@ -21,19 +16,7 @@ export default function DashboardLayout() {
     const closeSideBar = () => {
         setIsOpen(false);
     }
-    useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res  = await api.get<CoursesResponse>("/courses");
-        console.log(res.data);
-        setCourses(res.data.data);
-      } catch (error) {
-        console.error(error);
-      }
-    };
 
-    fetchData();
-  }, []);
 
   return (
     <div className="min-h-screen bg-slate-50">
@@ -52,7 +35,7 @@ export default function DashboardLayout() {
 
           {/* Page Content */}
           <main className="p-4 pb-20 lg:pb-6">
-            <Outlet context={{courses}}/>
+            <Outlet/>
           </main>
         </div>
       </div>

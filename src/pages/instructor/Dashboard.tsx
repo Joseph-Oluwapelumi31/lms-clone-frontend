@@ -1,3 +1,11 @@
+import {useState, useEffect } from "react";
+import { api } from "../../lib/api";
+import type { Course } from "../../types/instructorDashboard";
+
+
+type CoursesResponse = {
+  data: Course[];
+};
 
 import {
   BookOpen,
@@ -10,14 +18,9 @@ import {
   BarChart3,
   Clock3,
 } from "lucide-react";
+import { Link } from "react-router-dom";
 
-type Course = {
-  id: number;
-  title: string;
-  students: number;
-  lessons: number;
-  status: "Published" | "Draft";
-};
+
 
 type Student = {
   id: number;
@@ -33,52 +36,13 @@ type Activity = {
 };
 
 export default function InstructorDashboard() {
-  const stats = [
-    {
-      title: "Total Courses",
-      value: 6,
-      icon: BookOpen,
-    },
-    {
-      title: "Total Students",
-      value: 148,
-      icon: Users,
-    },
-    {
-      title: "Total Lessons",
-      value: 42,
-      icon: Video,
-    },
-    {
-      title: "Revenue",
-      value: "$1,250",
-      icon: DollarSign,
-    },
-  ];
-
-  const courses: Course[] = [
-    {
-      id: 1,
-      title: "React for Beginners",
-      students: 45,
-      lessons: 12,
-      status: "Published",
-    },
-    {
-      id: 2,
-      title: "Advanced CSS Mastery",
-      students: 31,
-      lessons: 10,
-      status: "Published",
-    },
-    {
-      id: 3,
-      title: "Node.js API Bootcamp",
-      students: 18,
-      lessons: 8,
-      status: "Draft",
-    },
-  ];
+  const [courses, setCourses] = useState<Course[]>([]);
+  // const [getCourse, SetgetCourse] = useState([])
+  
+const totalStudents = courses.reduce((sum, course) => {
+  return sum + course.students.length;
+}, 0);
+  
 
   const students: Student[] = [
     {
@@ -119,6 +83,30 @@ export default function InstructorDashboard() {
     },
   ];
 
+    useEffect(() => {
+      const fetchData = async () => {
+        try {
+          const res  = await api.get<CoursesResponse>("/courses");
+          console.log(res.data);
+          setCourses(res.data.data);
+        } catch (error) {
+          console.error(error);
+        }
+      };
+    
+      fetchData();
+    }, []);
+  
+    // const handleEdit = async(id: string)=>{
+    //   try {
+    //     const res = api.get(`/courses/${id}`)
+    //     SetgetCourse(res.data)
+    //   } catch (error) {
+    //     console.log("error" + error)
+    //   }
+      
+    // }
+      
   return (
     <div className="min-h-screen bg-slate-50 p-4 md:p-6">
       <div className="mx-auto max-w-7xl space-y-6">
@@ -133,37 +121,82 @@ export default function InstructorDashboard() {
             </p>
           </div>
 
-          <button className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm font-medium text-white transition hover:opacity-90">
+          <Link to={'/instructor/courses/new'} className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-3 text-sm font-medium text-white transition hover:opacity-90">
             <PlusCircle size={18} />
             Create New Course
-          </button>
+          </Link>
         </div>
 
         {/* Stats */}
+         
         <section className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {stats.map((stat) => {
-            const Icon = stat.icon;
-
-            return (
-              <div
-                key={stat.title}
-                className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200"
-              >
-                <div className="flex items-start justify-between">
-                  <div>
-                    <p className="text-sm text-slate-500">{stat.title}</p>
-                    <h2 className="mt-2 text-2xl font-bold text-slate-900">
-                      {stat.value}
-                    </h2>
-                  </div>
-
-                  <div className="rounded-xl bg-slate-100 p-3 text-slate-700">
-                    <Icon size={20} />
-                  </div>
-                </div>
+          <div
+            className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200"
+          >
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-sm text-slate-500">Total Courses</p>
+                <h2 className="mt-2 text-2xl font-bold text-slate-900">
+                  {courses.length}
+                </h2>
               </div>
-            );
-          })}
+              <div className="rounded-xl bg-slate-100 p-3 text-slate-700">
+                <BookOpen size={20} />
+              </div>
+            </div>
+
+          </div>
+
+          <div
+            className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200"
+          >
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-sm text-slate-500">Total Students</p>
+                <h2 className="mt-2 text-2xl font-bold text-slate-900">
+                  {totalStudents}
+                </h2>
+              </div>
+              <div className="rounded-xl bg-slate-100 p-3 text-slate-700">
+                <Users size={20} />
+              </div>
+            </div>
+            
+          </div>
+
+          <div
+            className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200"
+          >
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-sm text-slate-500">Total Lessons</p>
+                <h2 className="mt-2 text-2xl font-bold text-slate-900">
+                  {courses.length}
+                </h2>
+              </div>
+              <div className="rounded-xl bg-slate-100 p-3 text-slate-700">
+                <Video size={20} />
+              </div>
+            </div>
+            
+          </div>
+
+          <div
+            className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200"
+          >
+            <div className="flex items-start justify-between">
+              <div>
+                <p className="text-sm text-slate-500">Revenue</p>
+                <h2 className="mt-2 text-2xl font-bold text-slate-900">
+                  $1,250
+                </h2>
+              </div>
+              <div className="rounded-xl bg-slate-100 p-3 text-slate-700">
+                <DollarSign size={20} />
+              </div>
+            </div>
+            
+          </div>
         </section>
 
         {/* Quick Actions */}
@@ -178,15 +211,15 @@ export default function InstructorDashboard() {
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-4">
-            <button className="flex items-center gap-3 rounded-xl border border-slate-200 p-4 text-left transition hover:bg-slate-50">
+            <Link to={'/instructor/courses/new'} className="flex items-center gap-3 rounded-xl border border-slate-200 p-4 text-left transition hover:bg-slate-50">
               <PlusCircle className="text-slate-700" size={20} />
               <span className="font-medium text-slate-800">Create Course</span>
-            </button>
+            </Link>
 
-            <button className="flex items-center gap-3 rounded-xl border border-slate-200 p-4 text-left transition hover:bg-slate-50">
+            <Link to={'/instructor/courses'} className="flex items-center gap-3 rounded-xl border border-slate-200 p-4 text-left transition hover:bg-slate-50">
               <Pencil className="text-slate-700" size={20} />
               <span className="font-medium text-slate-800">Edit Courses</span>
-            </button>
+            </Link>
 
             <button className="flex items-center gap-3 rounded-xl border border-slate-200 p-4 text-left transition hover:bg-slate-50">
               <Users className="text-slate-700" size={20} />
@@ -219,9 +252,9 @@ export default function InstructorDashboard() {
             </div>
 
             <div className="space-y-4">
-              {courses.map((course) => (
+              {courses.slice(0,3).map((course) => (
                 <div
-                  key={course.id}
+                  key={course._id}
                   className="rounded-2xl border border-slate-200 p-4"
                 >
                   <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
@@ -232,31 +265,31 @@ export default function InstructorDashboard() {
                         </h3>
                         <span
                           className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-                            course.status === "Published"
+                            course.isPublished 
                               ? "bg-green-100 text-green-700"
                               : "bg-yellow-100 text-yellow-700"
                           }`}
                         >
-                          {course.status}
+                          {course.isPublished ? 'Published' : "Draft"}
                         </span>
                       </div>
 
                       <div className="mt-2 flex flex-wrap gap-4 text-sm text-slate-500">
-                        <span>{course.students} students</span>
-                        <span>{course.lessons} lessons</span>
+                        <span>{course.students.length} students</span>
+                        <span>{totalStudents} lessons</span>
                       </div>
                     </div>
 
                     <div className="flex flex-wrap gap-2">
-                      <button className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                      <Link to={`/instructor/courses/${course._id}`} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
                         <Eye size={16} />
                         View
-                      </button>
+                      </Link>
 
-                      <button className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+                      <Link to={`/instructor/courses/${course._id}/edit`} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
                         <Pencil size={16} />
                         Edit
-                      </button>
+                      </Link>
                     </div>
                   </div>
                 </div>

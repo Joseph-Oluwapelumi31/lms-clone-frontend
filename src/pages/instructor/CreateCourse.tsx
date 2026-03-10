@@ -7,12 +7,14 @@ import { useAuth } from "../../hooks/useAuth";
 type CreateCoursePayload = {
   title: string;
   description: string;
+  isPublished: boolean
 };
 
 const CreateCourse = () => {
   const [formData, setFormData] = useState<CreateCoursePayload>({
     title: "",
     description: "",
+    isPublished: false
   });
 
   const [loading, setLoading] = useState(false);
@@ -52,6 +54,7 @@ const CreateCourse = () => {
       setFormData({
         title: "",
         description: "",
+        isPublished: false
       });
       if (!user) {
         return <Navigate to="/login" />;
@@ -174,6 +177,7 @@ const CreateCourse = () => {
                   setFormData({
                     title: "",
                     description: "",
+                    isPublished: false
                   })
                 }
                 className="rounded-xl border border-slate-300 px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"

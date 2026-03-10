@@ -10,7 +10,7 @@ export type Course = {
   description: string;
   instructor: Instructor;
   isPublished: boolean;
-  students: Student[] | string[];
+  students: Student[];
   createdAt: string;
   updatedAt: string;
   __v: number;

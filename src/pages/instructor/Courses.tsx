@@ -1,14 +1,35 @@
-import { Link, useOutletContext } from "react-router-dom"
+import { Link} from "react-router-dom"
 import type { Course } from "../../types/instructorDashboard";
 import { Pencil, Eye , PlusCircle } from "lucide-react";
+import { useEffect, useState } from "react";
+import { api } from "../../lib/api";
 
-type DashboardOutletContext = {
-  courses: Course[];
+
+
+type CoursesResponse = {
+  data: Course[];
 };
 
 
+
 const Courses = () => {
-  const { courses } = useOutletContext<DashboardOutletContext>();
+  const [courses, setCourses] = useState<Course[]>([]);
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res  = await api.get<CoursesResponse>("/courses");
+        console.log(res.data);
+        setCourses(res.data.data);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+  
+    fetchData();
+  }, []);
+
+
   return(
   <>
   {/* Header */}
@@ -70,10 +91,10 @@ const Courses = () => {
             View
           </Link>
     
-          <button className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
+          <Link to={`/instructor/courses/${course._id}/edit`} className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50">
             <Pencil size={16} />
             Edit
-          </button>
+          </Link>
         </div>
       </div>
     </div>
