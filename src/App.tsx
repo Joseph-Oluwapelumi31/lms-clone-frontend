@@ -26,6 +26,8 @@ import InstructorCourses from "./pages/instructor/Courses";
 import CreateCourse from "./pages/instructor/CreateCourse";
 import InstructorStudents from "./pages/instructor/Students";
 import InstructorProfile from "./pages/instructor/Profile";
+import CourseDetail from "./pages/instructor/CourseDetail";
+import EditCourse from "./pages/instructor/EditCourse";
 
 // Admin pages
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -79,6 +81,8 @@ export default function App() {
               <Route path="courses/new" element={<CreateCourse />} />
               <Route path="students" element={<InstructorStudents />} />
               <Route path="profile" element={<InstructorProfile />} />
+              <Route path="courses/:id" element={<CourseDetail/>}/>
+              <Route path="courses/:id/edit" element={<EditCourse/>}/>
               <Route path="*" element={<NotFound />} />
 
             </Route>
