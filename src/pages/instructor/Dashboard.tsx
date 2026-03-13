@@ -42,7 +42,10 @@ export default function InstructorDashboard() {
 const totalStudents = courses.reduce((sum, course) => {
   return sum + course.students.length;
 }, 0);
-  
+
+const totalLessons = courses.reduce((sum, courses) =>{
+  return sum + courses.lessons.length
+}, 0)
 
   const students: Student[] = [
     {
@@ -171,7 +174,7 @@ const totalStudents = courses.reduce((sum, course) => {
               <div>
                 <p className="text-sm text-slate-500">Total Lessons</p>
                 <h2 className="mt-2 text-2xl font-bold text-slate-900">
-                  {courses.length}
+                  {totalLessons}
                 </h2>
               </div>
               <div className="rounded-xl bg-slate-100 p-3 text-slate-700">
@@ -187,7 +190,7 @@ const totalStudents = courses.reduce((sum, course) => {
             <div className="flex items-start justify-between">
               <div>
                 <p className="text-sm text-slate-500">Revenue</p>
-                <h2 className="mt-2 text-2xl font-bold text-slate-900">
+                <h2 className="">
                   $1,250
                 </h2>
               </div>
@@ -276,7 +279,7 @@ const totalStudents = courses.reduce((sum, course) => {
 
                       <div className="mt-2 flex flex-wrap gap-4 text-sm text-slate-500">
                         <span>{course.students.length} students</span>
-                        <span>{totalStudents} lessons</span>
+                        <span>{course.lessons.length} lessons</span>
                       </div>
                     </div>
 

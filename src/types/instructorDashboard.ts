@@ -11,6 +11,7 @@ export type Course = {
   instructor: Instructor;
   isPublished: boolean;
   students: Student[];
+  lessons: string[];
   createdAt: string;
   updatedAt: string;
   __v: number;
@@ -21,4 +22,18 @@ export type Student = {
   name: string;
   email: string;
 };
+
+export type Lesson = {
+    _id: string;
+    title: string;
+    type: 'text' | 'video' | 'image' | 'pdf';
+    content?: string;
+    mediaUrl?: string;
+    thumbnailUrl?: string;
+    duration?: number;
+    order: number;
+    course: string;
+    createdAt: Date;
+    updatedAt: Date
+}
 

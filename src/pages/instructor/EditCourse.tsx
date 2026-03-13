@@ -7,7 +7,10 @@ import { useState, useEffect } from "react";
 import type{ Course } from "../../types/instructorDashboard";
 
 type CoursesResponse = {
-  data: Course;
+  data: {
+    course: Course;
+    enrollmentCount: number;
+  }
 };
 
 type CreateCoursePayload = {
@@ -38,7 +41,7 @@ const EditCourse = () => {
           try {
               const fetchCourse = async()=>{
                   const res = await api.get<CoursesResponse>(`/courses/${id}`)
-                  setCourse(res.data.data)
+                  setCourse(res.data.data.course)
                   console.log(res)
               }
               fetchCourse();
@@ -51,9 +54,9 @@ const EditCourse = () => {
   useEffect(() => {
     if (course) {
       setFormData({
-        title: course.title,
-        description: course.description,
-        isPublished: course.isPublished
+        title: course.title ?? "",
+        description: course.description ?? "",
+        isPublished: course.isPublished ?? ""
       });
     }
     }, [course]);
@@ -112,10 +115,10 @@ const EditCourse = () => {
       <div className="mx-auto max-w-3xl">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-slate-900 md:text-3xl">
-            Create Course
+            Edit Course
           </h1>
           <p className="mt-2 text-sm text-slate-600">
-            Fill in the course details to create a new course.
+            Fill in the course details to edit your course
           </p>
         </div>
 
