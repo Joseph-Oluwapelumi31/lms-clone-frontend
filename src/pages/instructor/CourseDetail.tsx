@@ -2,7 +2,7 @@ import { useParams, Link } from "react-router-dom";
 import { api } from "../../lib/api";
 import { useState, useEffect } from "react";
 import type { Course, Lesson } from "../../types/instructorDashboard";
-import { Play, NotebookText, MoveLeft, ChevronDown, Check } from "lucide-react";
+import { Play, NotebookText, MoveLeft, ChevronDown, Check, MessageCircleMore } from "lucide-react";
 
 type CoursesResponse = {
   data: {
@@ -84,9 +84,12 @@ const CourseDetail = () => {
     <>
       {/* mobile section */}
       <section className="md:hidden">
+        <div className="flex justify-center items-center h-70 bg-bg mb-4">
+          <p className="text-white font-bold text-3xl">{course?.code}</p>
+        </div>
         <div>
-          <h2>{course?.title}</h2>
-          <p>{lessons.length} lessons</p>
+          <h2 className="font-bold text-xl">{course?.code}: {course?.title}</h2>
+          <p className="text-muted ">{lessons.length} lessons</p>
         </div>
 
         <div className="grid grid-cols-3">
@@ -335,7 +338,19 @@ const Lessons = ({ lessons }: LessonsProps) => {
 const Discussions = () => {
   return (
     <>
-      <div>Discussion</div>
+      <div className="flex flex-col p-4 justify-center items-center text-muted">
+        <MessageCircleMore size={40} />
+        <h2 className="font-bold text-text text-lg mb-2">Coumminity forum</h2>
+        <p className="text-sm text-center">Join the conversation, ask questions, and share ideas with other students.</p>
+
+        <Link to={''} >
+          <div className="text-white bg-bg flex justify-center items-center px-6 py-2 rounded-full mt-4 ">
+            <p >Open forum</p>
+
+          </div>
+        </Link>
+
+      </div>
     </>
   );
 };
