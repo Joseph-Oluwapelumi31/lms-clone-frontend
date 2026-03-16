@@ -59,7 +59,7 @@ const Login = () => {
               type="text"
                 id="name"
                 className="border border-gray-300 rounded-xl p-4" name="matric-number"
-                placeholder="Enter Matric Number"
+                placeholder="Enter Your name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 />
@@ -68,10 +68,10 @@ const Login = () => {
             
             <label htmlFor="email" className="font-bold mb-2 text-muted">Email</label>
             <input 
-            type="text"
+            type="email"
               id="email"
               className="border border-gray-300 rounded-xl p-4" name="matric-number"
-              placeholder="Enter Matric Number"
+              placeholder="Enter your email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               />
