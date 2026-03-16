@@ -19,6 +19,7 @@ import Calender from "./pages/student/Calender";
 import Attendance from "./pages/student/Attendance";
 import { Assignment } from "./pages/student/Assignment";
 import Academics from "./pages/student/Academics";
+import StudentCourseDetail from "./pages/student/CourseDetail";
 
 // Instructor pages
 import InstructorDashboard from "./pages/instructor/Dashboard";
@@ -67,6 +68,7 @@ export default function App() {
               <Route path="attendance" element={<Attendance />} />
               <Route path="assignment" element={<Assignment />} />
               <Route path="academics" element={<Academics />} />
+              <Route path="courses/:id" element={<StudentCourseDetail/>}/>
               <Route path="*" element={<NotFound />} />
             </Route>
           </Route>
