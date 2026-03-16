@@ -87,12 +87,12 @@ const Login = () => {
               onChange={(e)=> setPassword(e.target.value)}
               />
           </div>
-                
+
           <div className="flex gap-1">
             <input type="checkbox" id="remember-me" name="remember-me" />
             <label htmlFor="remember-me" className="font-bold  text-muted">Remember me</label>
           </div>
-          <button type="submit" className=" bg-bg text-white font-bold rounded-xl shadow-xl h-12 cursor-pointer hover:bg-[#1a1a2e] p-2 mt-4">Login</button>
+          <button type="submit" className=" bg-bg text-white font-bold rounded-xl shadow-xl h-12 cursor-pointer hover:bg-[#1a1a2e] p-2 mt-4">Register</button>
         </form>
       </div>
     </div>
