@@ -8,6 +8,7 @@ export type Course = {
   _id: string;
   title: string;
   description: string;
+  code: string;
   instructor: Instructor;
   isPublished: boolean;
   students: Student[];
