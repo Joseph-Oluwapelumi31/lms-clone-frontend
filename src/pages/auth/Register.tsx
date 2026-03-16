@@ -54,10 +54,10 @@ const Login = () => {
         <form onSubmit= {submit} className="flex flex-col gap-4">
             <div className="flex flex-col">
               
-              <label htmlFor="matric-number" className="font-bold mb-2 text-muted">Matric Number</label>
+              <label htmlFor="name" className="font-bold mb-2 text-muted">Name</label>
               <input 
               type="text"
-                id="email"
+                id="name"
                 className="border border-gray-300 rounded-xl p-4" name="matric-number"
                 placeholder="Enter Matric Number"
                 value={name}
@@ -66,7 +66,7 @@ const Login = () => {
             </div>
           <div className="flex flex-col">
             
-            <label htmlFor="matric-number" className="font-bold mb-2 text-muted">Matric Number</label>
+            <label htmlFor="email" className="font-bold mb-2 text-muted">Email</label>
             <input 
             type="text"
               id="email"
@@ -87,7 +87,7 @@ const Login = () => {
               onChange={(e)=> setPassword(e.target.value)}
               />
           </div>
-
+                
           <div className="flex gap-1">
             <input type="checkbox" id="remember-me" name="remember-me" />
             <label htmlFor="remember-me" className="font-bold  text-muted">Remember me</label>

@@ -369,7 +369,7 @@ const totalLessons = courses.reduce((sum, courses) =>{
                     <td className="px-4 py-3">{student.course}</td>
                     <td className="rounded-r-xl px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div className="h-2 w-full max-w-[140px] rounded-full bg-slate-200">
+                        <div className="h-2 w-full max-w-35 rounded-full bg-slate-200">
                           <div
                             className="h-2 rounded-full bg-slate-900"
                             style={{ width: `${student.progress}%` }}
