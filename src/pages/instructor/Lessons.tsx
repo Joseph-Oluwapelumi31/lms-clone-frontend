@@ -1,7 +1,16 @@
 
 const Lessons = () => {
   return (
-    <div>Lessons</div>
+    <>
+      <section>
+
+      </section>
+      <section>
+        <h1>
+          lessons.ts
+        </h1>
+      </section>
+    </>
   )
 }
 
