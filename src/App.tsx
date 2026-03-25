@@ -21,6 +21,7 @@ import { Assignment } from "./pages/student/Assignment";
 import Academics from "./pages/student/Academics";
 import StudentCourseDetail from "./pages/student/CourseDetail";
 
+
 // Instructor pages
 import InstructorDashboard from "./pages/instructor/Dashboard";
 import InstructorCourses from "./pages/instructor/Courses";
@@ -29,6 +30,8 @@ import InstructorStudents from "./pages/instructor/Students";
 import InstructorProfile from "./pages/instructor/Profile";
 import CourseDetail from "./pages/instructor/CourseDetail";
 import EditCourse from "./pages/instructor/EditCourse";
+import InstructorLessonDetail from './pages/instructor/Lessons'
+
 
 // Admin pages
 import AdminDashboard from "./pages/admin/Dashboard";
@@ -85,6 +88,7 @@ export default function App() {
               <Route path="profile" element={<InstructorProfile />} />
               <Route path="courses/:id" element={<CourseDetail/>}/>
               <Route path="courses/:id/edit" element={<EditCourse/>}/>
+              <Route path=":courseId/lesson/:lessonId" element={<InstructorLessonDetail/>}/>
               <Route path="*" element={<NotFound />} />
 
             </Route>
