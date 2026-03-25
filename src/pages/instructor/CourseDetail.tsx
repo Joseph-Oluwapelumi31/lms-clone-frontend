@@ -29,7 +29,7 @@ const tabs: Tab[] = [
 const CourseDetail = () => {
   const [course, setCourse] = useState<Course | null>(null);
   const [activeTab, setActiveTab] = useState("about");
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(true);
   const [lessons, setLessons] = useState<Lesson[]>([]);
   const [readMore, setReadMore] = useState(false);
@@ -122,7 +122,7 @@ const CourseDetail = () => {
             />
           )}
 
-          {activeTab === "lessons" && <Lessons lessons={lessons} />}
+          {activeTab === "lessons" && <Lessons lessons={lessons} id={id} />}
 
           {activeTab === "discussion" && <Discussions />}
         </div>
@@ -169,47 +169,50 @@ const CourseDetail = () => {
               const isOpen = openLessonId === lesson._id;
 
               return (
-                <div
-                  key={lesson._id}
-                  className="flex flex-col bg-white py-4 px-6 shadow-sm rounded-sm"
-                >
+                <Link to={`/instructor/${id}/lesson/${lesson._id}`}>
                   <div
-                    className="flex justify-between bg-white mb-4 border-b pb-4 border-slate-300 cursor-pointer"
-                    onClick={() => handleToggleLecture(lesson._id)}
+                    key={lesson._id}
+                    className="flex flex-col bg-white py-4 px-6 shadow-sm rounded-sm"
                   >
-                    <div className="flex gap-8">
-                      <p className="font-bold text-muted">Week {lesson.order}</p>
-                      <p className="font-bold">
-                        {lesson.title || `Lecture ${lesson.order}`}
-                      </p>
-                    </div>
-
-                    <ChevronDown
-                      className={`transition-transform duration-200 ${
-                        isOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </div>
-
-                  {isOpen && (
-                    <div className="flex justify-between items-center">
-                      <div className="flex text-sm items-center gap-2">
-                        <Play
-                          size={8}
-                          className="text-white bg-bg p-1 w-4 h-4 rounded-full"
-                        />
-                        <p className="text-text">Available now</p>
+                    <div
+                      className="flex justify-between bg-white mb-4 border-b pb-4 border-slate-300 cursor-pointer"
+                      onClick={() => handleToggleLecture(lesson._id)}
+                    >
+                      <div className="flex gap-8">
+                        <p className="font-bold text-muted">Week {lesson.order}</p>
+                        <p className="font-bold">
+                          {lesson.title || `Lecture ${lesson.order}`}
+                        </p>
                       </div>
 
-                      <Link
-                        to={`/instructor/courses/${id}/lessons/${lesson._id}`}
-                        className="bg-bg px-4 py-2 rounded-full text-white hover:bg-bg/90 hover:shadow-md transition-all duration-200"
-                      >
-                        Start lesson
-                      </Link>
+                      <ChevronDown
+                        className={`transition-transform duration-200 ${
+                          isOpen ? "rotate-180" : ""
+                        }`}
+                      />
                     </div>
-                  )}
-                </div>
+
+                    {isOpen && (
+                      <div className="flex justify-between items-center">
+                        <div className="flex text-sm items-center gap-2">
+                          <Play
+                            size={8}
+                            className="text-white bg-bg p-1 w-4 h-4 rounded-full"
+                          />
+                          <p className="text-text">Available now</p>
+                        </div>
+
+                        <Link
+                          to={`/instructor/courses/${id}/lessons/${lesson._id}`}
+                          className="bg-bg px-4 py-2 rounded-full text-white hover:bg-bg/90 hover:shadow-md transition-all duration-200"
+                        >
+                          Start lesson
+                        </Link>
+                      </div>
+                    )}
+                  </div>
+                </Link>
+                
               );
             })}
           </div>
@@ -263,6 +266,7 @@ type AboutProps = {
 
 type LessonsProps = {
   lessons: Lesson[];
+  id?: string;
 };
 
 const About = ({
@@ -301,7 +305,7 @@ const About = ({
   );
 };
 
-const Lessons = ({ lessons }: LessonsProps) => {
+const Lessons = ({ lessons, id}: LessonsProps) => {
   if (lessons.length === 0) {
     return (
       <div>
@@ -326,7 +330,7 @@ const Lessons = ({ lessons }: LessonsProps) => {
             <p className="text-sm text-muted">{lesson.type} lesson</p>
           </div>
 
-          <Link to={lesson._id}>
+          <Link to={id ? `/instructor/${id}/lesson/${lesson._id}` : "#"}>
             <Play size={30} className="bg-bg p-2 rounded-full text-white" />
           </Link>
         </div>
