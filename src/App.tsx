@@ -48,8 +48,10 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
+
         {/* Public auth routes */}
         <Route element={<AuthLayout />}>
+          <Route path="/" element={<Navigate to='/login' replace={true}/> } />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Route>
