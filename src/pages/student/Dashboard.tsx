@@ -76,22 +76,22 @@ export default function Dashboard() {
       <div className="lg:hidden">
         <h2 className="text-text font-bold text-md mt-6 mb-4">Quick Access</h2>
         <div className="flex justify-around">
-          <Link to="/results" className="flex flex-col gap-2">
+          <Link to="/student/results" className="flex flex-col gap-2">
             <ChartLine className="h-12 w-12 bg-white p-3 rounded-xl text-[#0d6efd]" />
             <p className="text-muted font-bold text-xs">Results</p>
           </Link>
 
-          <Link to="/attendance" className="flex flex-col gap-2">
+          <Link to="/student/attendance" className="flex flex-col gap-2">
             <CalendarCheck className="h-12 w-12 bg-white p-3 rounded-xl text-[#6f42c1]" />
             <p className="text-muted font-bold text-xs">Attend</p>
           </Link>
 
-          <Link to="/assignment" className="flex flex-col gap-2">
+          <Link to="/student/assignments" className="flex flex-col gap-2">
             <NotebookText className="h-12 w-12 bg-white p-3 rounded-xl text-[#dc3545]" />
             <p className="text-muted font-bold text-xs">Notes</p>
           </Link>
 
-          <Link to="/dashboard" className="flex flex-col gap-2">
+          <Link to="/student/dashboard" className="flex flex-col gap-2">
             <Bot className="h-12 w-12 bg-white p-3 rounded-xl text-[#198754]" />
             <p className="text-muted font-bold text-xs">AI Chatbot</p>
           </Link>

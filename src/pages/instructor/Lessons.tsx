@@ -49,7 +49,8 @@ const LessonDetail = () => {
 
   return (
     <section>
-      <div className='lg:hidden' style={{ position: "relative", paddingBottom: "56.25%", height: 0 }}>
+      {lesson?.type === 'video' && (
+        <div className='lg:hidden' style={{ position: "relative", paddingBottom: "56.25%", height: 0 }}>
 
           <iframe
             src="https://www.youtube.com/embed/K0Jlr_eVFGM?si=J6cO3vxzTTa3mWgk"
@@ -65,12 +66,13 @@ const LessonDetail = () => {
             allowFullScreen
           ></iframe>
       </div>
+      )}
 
     <div className=" max-w-4x bg-white p-4 md:hidden">
             
         <div>
           <h2 className='text-text font-bold text-xl'>Lecture {lesson?.order}</h2>
-          <div className='text-text font-bold text-sm mb-4'>Week {lesson?.order}. <span className='text-muted'>Video Lesson</span></div>
+          <div className='text-text font-bold text-sm mb-4'>Week {lesson?.order}. <span className='text-muted'>{lesson?.type} Lesson</span></div>
           <div className='flex gap-2'>
             <div className='bg-slate-50 rounded-full py-2 px-4 flex gap-2 text-muted items-center justify-center w-50 text-sm'>
               <Lock size={15}/>
@@ -111,7 +113,7 @@ const LessonDetail = () => {
         {activeTab === 'overview' &&
           <div>
             <h2 className='font-bold text-text text-lg mb-4'>Description</h2>
-            <p>{lesson?.type}</p>
+            <p>{lesson?.content}</p>
 
             
 
@@ -123,6 +125,8 @@ const LessonDetail = () => {
     {/* Desktop and tablet section */}
     <div className='hidden md:block lg:grid lg:grid-cols-3 gap-4 '>
       <div className='  lg:col-span-2'>
+      {lesson?.type === 'video' && (
+
         <div className='hidden rounded-2xl lg:block' style={{ position: "relative", paddingBottom: "56.25%", height: 0 }}>
 
           <iframe
@@ -139,6 +143,7 @@ const LessonDetail = () => {
             allowFullScreen
           ></iframe>
         </div>
+      )}
         <div className='p-6 rounded-2xl my-4 bg-white'>
           <h2 className='text-text font-bold text-xl mb-4'>About this lesson</h2>
           <p className='text-muted'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio voluptatem deleniti quis quos vitae cum autem, doloribus excepturi cupiditate corrupti iure ducimus mollitia magnam maxime, recusandae repudiandae doloremque accusantium eligendi!</p>
@@ -163,7 +168,7 @@ const LessonDetail = () => {
             </Link>
             <Link to={''}>
               <div className='flex justify-center items-center gap-2 rounded-full py-3 border border-[#6c757d] text-muted hover:bg-[#6c757d] hover:text-white transition-all duration-200 '>
-                <Download className='  rounded-full w-4 h-6 '/>
+                <Download className='rounded-full w-4 h-6 '/>
                 <p>Lesson Resources</p>
               </div>
             </Link>

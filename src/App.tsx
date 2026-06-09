@@ -71,7 +71,7 @@ export default function App() {
               <Route path="enrollment" element={<Enrollment />} />
               <Route path="calender" element={<Calender />} />
               <Route path="attendance" element={<Attendance />} />
-              <Route path="assignment" element={<Assignment />} />
+              <Route path="assignments" element={<Assignment />} />
               <Route path="academics" element={<Academics />} />
               <Route path="courses/:id" element={<StudentCourseDetail/>}/>
               <Route path="*" element={<NotFound />} />

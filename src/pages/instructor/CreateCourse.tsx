@@ -20,6 +20,7 @@ const CreateCourse = () => {
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [file, setFile] = useState<File | null>(null);
   const navigate = useNavigate();
 
   const {user} = useAuth();
@@ -69,6 +70,11 @@ const CreateCourse = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0] || null;
+    setFile(selectedFile);
   };
 
   return (
@@ -123,24 +129,37 @@ const CreateCourse = () => {
               />
             </div>
 
-            <div>
-              <label className="mb-2 block text-sm font-medium text-slate-700">
-                Thumbnail
+            <div className={`flex min-h-35 items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-6 text-center cursor-pointer`}>
+              <label className="hidden flex-col items-center gap-2 cursor-pointer">
+
+                <input 
+                  type="file" 
+                  accept="image/*" 
+                  className="hidden"
+                  onChange={handleFileChange}
+                />
+
+                <div className="rounded-full bg-slate-200 p-3 text-slate-700">
+                  <ImagePlus size={20} />
+                </div>
+
+                <p className="text-sm font-medium text-slate-700">
+                  Click to upload thumbnail
+                </p>
+
+                <p className="text-xs text-slate-500">
+                  PNG, JPG allowed
+                </p>
+
               </label>
 
-              <div className="flex min-h-[140px] items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-6 text-center">
-                <div className="flex flex-col items-center gap-2">
-                  <div className="rounded-full bg-slate-200 p-3 text-slate-700">
-                    <ImagePlus size={20} />
-                  </div>
-                  <p className="text-sm font-medium text-slate-700">
-                    Thumbnail upload coming soon
-                  </p>
-                  <p className="text-xs text-slate-500">
-                    You can add image upload after setting up file handling.
-                  </p>
-                </div>
-              </div>
+              {file && (
+                <img
+                  src={URL.createObjectURL(file)}
+                  alt="preview"
+                  className="mt-3 rounded-lg w-32"
+                />
+              )}
             </div>
 
             {successMessage && (

@@ -27,7 +27,7 @@ const Topbar = ({  toggleDropdown }: TopbarProps) => {
             </div>
             <div className="flex items-center gap-2">
                 <Search className="w-10 h-10  bg-slate-50 p-2 rounded-full" />
-                <Link to="/notification" className="relative">
+                <Link to="/student/notification" className="relative">
                     <div className="relative">
                         <Bell className="w-10 h-10 bg-slate-50 p-2 rounded-full" />
                         <span className="bg-red-600  rounded-full absolute -top-1 -right-1 text-xs h-2 w-2 text-white"></span>
