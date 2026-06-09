@@ -22,7 +22,99 @@ const LessonDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("instruction");
-  
+
+  const getYoutubeEmbedUrl = (url: string) => {
+    try {
+      const parsed = new URL(url);
+      const hostname = parsed.hostname.replace("www.", "");
+
+      if (hostname.includes("youtu.be")) {
+        return `https://www.youtube.com/embed/${parsed.pathname.slice(1)}`;
+      }
+
+      if (hostname.includes("youtube.com")) {
+        const videoId = parsed.searchParams.get("v");
+        if (videoId) {
+          return `https://www.youtube.com/embed/${videoId}`;
+        }
+
+        if (parsed.pathname.startsWith("/embed/")) {
+          return url;
+        }
+      }
+    } catch {
+      // fall through to raw URL
+    }
+
+    return url;
+  };
+
+  const renderLessonMedia = () => {
+    if (!lesson || !lesson.mediaUrl) {
+      return null;
+    }
+
+    if (lesson.type === "video") {
+      const isYouTube = /(?:youtu\.be|youtube\.com)/i.test(lesson.mediaUrl);
+      return isYouTube ? (
+        <iframe
+          src={getYoutubeEmbedUrl(lesson.mediaUrl)}
+          title={lesson.title || "Lesson video"}
+          style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
+          frameBorder="0"
+          allowFullScreen
+        />
+      ) : (
+        <video
+          controls
+          className="w-full rounded-2xl"
+          src={lesson.mediaUrl}
+        >
+          Your browser does not support the video tag.
+        </video>
+      );
+    }
+
+    if (lesson.type === "image") {
+      return (
+        <img
+          src={lesson.mediaUrl}
+          alt={lesson.title || "Lesson image"}
+          className="w-full rounded-2xl object-cover"
+        />
+      );
+    }
+
+    if (lesson.type === "pdf") {
+      return (
+        <iframe
+          src={lesson.mediaUrl}
+          title={lesson.title || "Lesson PDF"}
+          className="w-full min-h-125 rounded-2xl border"
+        />
+      );
+    }
+
+    return null;
+  };
+
+  const renderLessonOverview = () => {
+    if (!lesson) return null;
+
+    if (lesson.type === "text") {
+      return <p className="text-muted whitespace-pre-line">{lesson.content || "No lesson content available."}</p>;
+    }
+
+    if (lesson.mediaUrl) {
+      return (
+        <div className="space-y-4">
+          <p className="text-muted">Media URL: <a href={lesson.mediaUrl} target="_blank" rel="noreferrer" className="text-bg underline">Open resource</a></p>
+        </div>
+      );
+    }
+
+    return <p className="text-muted">No preview available for this lesson type.</p>;
+  };
 
   useEffect(() => {
     if (!lessonId) {
@@ -49,23 +141,10 @@ const LessonDetail = () => {
 
   return (
     <section>
-      {lesson?.type === 'video' && (
+      {lesson?.mediaUrl && (
         <div className='lg:hidden' style={{ position: "relative", paddingBottom: "56.25%", height: 0 }}>
-
-          <iframe
-            src="https://www.youtube.com/embed/K0Jlr_eVFGM?si=J6cO3vxzTTa3mWgk"
-            title="YouTube video player"
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-            }}
-            frameBorder="0"
-            allowFullScreen
-          ></iframe>
-      </div>
+          {renderLessonMedia()}
+        </div>
       )}
 
     <div className=" max-w-4x bg-white p-4 md:hidden">
@@ -125,29 +204,14 @@ const LessonDetail = () => {
     {/* Desktop and tablet section */}
     <div className='hidden md:block lg:grid lg:grid-cols-3 gap-4 '>
       <div className='  lg:col-span-2'>
-      {lesson?.type === 'video' && (
-
+      {lesson?.mediaUrl && (
         <div className='hidden rounded-2xl lg:block' style={{ position: "relative", paddingBottom: "56.25%", height: 0 }}>
-
-          <iframe
-            src="https://www.youtube.com/embed/K0Jlr_eVFGM?si=J6cO3vxzTTa3mWgk"
-            title="YouTube video player"
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: "100%",
-              height: "100%",
-            }}
-            frameBorder="0"
-            allowFullScreen
-          ></iframe>
+          {renderLessonMedia()}
         </div>
       )}
         <div className='p-6 rounded-2xl my-4 bg-white'>
           <h2 className='text-text font-bold text-xl mb-4'>About this lesson</h2>
-          <p className='text-muted'>Lorem ipsum dolor sit amet consectetur adipisicing elit. Distinctio voluptatem deleniti quis quos vitae cum autem, doloribus excepturi cupiditate corrupti iure ducimus mollitia magnam maxime, recusandae repudiandae doloremque accusantium eligendi!</p>
-
+          {renderLessonOverview()}
         </div>
       </div>
       <div>
