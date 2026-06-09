@@ -15,7 +15,7 @@ export const studentLinks = [
   { name: "Courses", path: "/student/courses", icon: NotebookText },
   { name: "Enrollment", path: "/student/enrollment", icon: PlusSquare },
   { name: "Academics", path: "/student/academics", icon: GraduationCap },
-  { name: "Notifications", path: "/student/notifications", icon: Bell },
+  { name: "Notifications", path: "/student/notification", icon: Bell },
   { name: "Profile", path: "/student/profile", icon: UserRound },
 ];
 
