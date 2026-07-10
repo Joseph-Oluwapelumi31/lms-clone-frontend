@@ -16,6 +16,7 @@ type CoursesResponse = {
 type CreateCoursePayload = {
   title: string;
   description: string;
+  code: string;
   isPublished: boolean
 };
 
@@ -25,9 +26,11 @@ const EditCourse = () => {
   const [formData, setFormData] = useState<CreateCoursePayload>({
     title: '',
     description: '',
+    code: '',
     isPublished: false
   });
 
+  const [file, setFile] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -56,6 +59,7 @@ const EditCourse = () => {
       setFormData({
         title: course.title ?? "",
         description: course.description ?? "",
+        code: course.code ?? "",
         isPublished: course.isPublished ?? ""
       });
     }
@@ -72,6 +76,11 @@ const EditCourse = () => {
     }));
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0] || null;
+    setFile(selectedFile);
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -79,22 +88,39 @@ const EditCourse = () => {
     setErrorMessage("");
 
     try {
-      const payload = {
-        title: formData.title,
-        description: formData.description,
-        isPublished: formData.isPublished
-      };
+      if (!formData.title.trim()) {
+        setErrorMessage("Course title is required.");
+        setLoading(false);
+        return;
+      }
+      if (!formData.description.trim()) {
+        setErrorMessage("Course description is required.");
+        setLoading(false);
+        return;
+      }
+      if (formData.code && formData.code.length !== 6) {
+        setErrorMessage("Course code must be exactly 6 characters.");
+        setLoading(false);
+        return;
+      }
+
+      const payload = new FormData();
+      payload.append("title", formData.title);
+      payload.append("description", formData.description);
+      if (formData.code) {
+        payload.append("code", formData.code);
+      }
+      payload.append("isPublished", formData.isPublished.toString());
+      if (file) {
+        payload.append("thumbnail", file);
+      }
 
       const res = await api.patch(`/courses/${id}`, payload);
 
-      setSuccessMessage("Course created successfully.");
+      setSuccessMessage("Course updated successfully.");
       console.log(res.data);
 
-      setFormData({
-        title: "",
-        description: "",
-        isPublished: false
-      });
+      setFile(null);
       if (!user) {
         return <Navigate to="/login" />;
       } 
@@ -103,7 +129,7 @@ const EditCourse = () => {
     } catch (error: unknown) {
       console.error(error);
       setErrorMessage(
-         "Failed to create course."
+         "Failed to update course."
       );
     } finally {
       setLoading(false);
@@ -164,22 +190,71 @@ const EditCourse = () => {
 
             <div>
               <label className="mb-2 block text-sm font-medium text-slate-700">
+                Course Code (6 characters)
+              </label>
+              <input
+                id="code"
+                name="code"
+                type="text"
+                placeholder="Enter 6-character course code"
+                value={formData.code}
+                onChange={(e) => {
+                  if (e.target.value.length <= 6) {
+                    handleChange(e);
+                  }
+                }}
+                maxLength={6}
+                className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-slate-500 uppercase"
+              />
+              <p className="mt-1 text-xs text-slate-500">
+                {formData.code.length}/6 characters
+              </p>
+            </div>
+
+            <div>
+              <label className="mb-2 block text-sm font-medium text-slate-700">
                 Thumbnail
               </label>
 
-              <div className="flex min-h-35 items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-6 text-center">
-                <div className="flex flex-col items-center gap-2">
+              <div className="flex min-h-35 items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-6 text-center cursor-pointer">
+                <label htmlFor="thumbnail" className="flex flex-col items-center gap-2 cursor-pointer w-full">
+                  <input 
+                    id="thumbnail"
+                    type="file" 
+                    accept="image/*" 
+                    className="hidden"
+                    onChange={handleFileChange}
+                  />
+
                   <div className="rounded-full bg-slate-200 p-3 text-slate-700">
                     <ImagePlus size={20} />
                   </div>
                   <p className="text-sm font-medium text-slate-700">
-                    Thumbnail upload coming soon
+                    Click to upload new thumbnail
                   </p>
                   <p className="text-xs text-slate-500">
-                    You can add image upload after setting up file handling.
+                    PNG, JPG allowed
                   </p>
-                </div>
+                </label>
+
+                {file && (
+                  <img
+                    src={URL.createObjectURL(file)}
+                    alt="preview"
+                    className="mt-3 rounded-lg w-32"
+                  />
+                )}
               </div>
+              {course?.thumbnail && !file && (
+                <div className="mt-3">
+                  <p className="text-xs text-slate-500 mb-2">Current thumbnail:</p>
+                  <img
+                    src={course.thumbnail.url}
+                    alt="current"
+                    className="rounded-lg w-32 h-32 object-cover"
+                  />
+                </div>
+              )}
             </div>
             <div className="flex items-center gap-2">
               <input
@@ -229,13 +304,15 @@ const EditCourse = () => {
 
               <button
                 type="button"
-                onClick={() =>
+                onClick={() => {
                   setFormData({
                     title: "",
                     description: "",
+                    code: "",
                     isPublished: false
-                  })
-                }
+                  });
+                  setFile(null);
+                }}
                 className="rounded-xl border border-slate-300 px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
               >
                 Clear

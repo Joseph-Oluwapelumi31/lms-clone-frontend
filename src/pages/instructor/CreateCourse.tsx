@@ -7,6 +7,7 @@ import { useAuth } from "../../hooks/useAuth";
 type CreateCoursePayload = {
   title: string;
   description: string;
+  code: string;
   isPublished: boolean
 };
 
@@ -14,6 +15,7 @@ const CreateCourse = () => {
   const [formData, setFormData] = useState<CreateCoursePayload>({
     title: "",
     description: "",
+    code: "",
     isPublished: false
   });
 
@@ -42,10 +44,32 @@ const CreateCourse = () => {
     setErrorMessage("");
 
     try {
-      const payload = {
-        title: formData.title,
-        description: formData.description,
-      };
+      if (!formData.title.trim()) {
+        setErrorMessage("Course title is required.");
+        setLoading(false);
+        return;
+      }
+      if (!formData.description.trim()) {
+        setErrorMessage("Course description is required.");
+        setLoading(false);
+        return;
+      }
+      if (!formData.code.trim() || formData.code.length !== 6) {
+        setErrorMessage("Course code must be exactly 6 characters.");
+        setLoading(false);
+        return;
+      }
+      if (!file) {
+        setErrorMessage("Thumbnail is required.");
+        setLoading(false);
+        return;
+      }
+
+      const payload = new FormData();
+      payload.append("title", formData.title);
+      payload.append("description", formData.description);
+      payload.append("code", formData.code);
+      payload.append("thumbnail", file);
 
       const res = await api.post("/courses", payload);
 
@@ -55,8 +79,10 @@ const CreateCourse = () => {
       setFormData({
         title: "",
         description: "",
+        code: "",
         isPublished: false
       });
+      setFile(null);
       if (!user) {
         return <Navigate to="/login" />;
       } 
@@ -129,14 +155,43 @@ const CreateCourse = () => {
               />
             </div>
 
+            <div>
+              <label
+                htmlFor="code"
+                className="mb-2 block text-sm font-medium text-slate-700"
+              >
+                Course Code (6 characters)
+              </label>
+              <input
+                id="code"
+                name="code"
+                type="text"
+                placeholder="Enter 6-character course code"
+                value={formData.code}
+                onChange={(e) => {
+                  if (e.target.value.length <= 6) {
+                    handleChange(e);
+                  }
+                }}
+                maxLength={6}
+                required
+                className="w-full rounded-xl border border-slate-300 px-4 py-3 text-sm outline-none transition focus:border-slate-500 uppercase"
+              />
+              <p className="mt-1 text-xs text-slate-500">
+                {formData.code.length}/6 characters
+              </p>
+            </div>
+
             <div className={`flex min-h-35 items-center justify-center rounded-2xl border-2 border-dashed border-slate-300 bg-slate-50 p-6 text-center cursor-pointer`}>
-              <label className="hidden flex-col items-center gap-2 cursor-pointer">
+              <label htmlFor="thumbnail" className="flex flex-col items-center gap-2 cursor-pointer w-full">
 
                 <input 
+                  id="thumbnail"
                   type="file" 
                   accept="image/*" 
                   className="hidden"
                   onChange={handleFileChange}
+                  required
                 />
 
                 <div className="rounded-full bg-slate-200 p-3 text-slate-700">
@@ -192,13 +247,15 @@ const CreateCourse = () => {
 
               <button
                 type="button"
-                onClick={() =>
+                onClick={() => {
                   setFormData({
                     title: "",
                     description: "",
+                    code: "",
                     isPublished: false
-                  })
-                }
+                  });
+                  setFile(null);
+                }}
                 className="rounded-xl border border-slate-300 px-5 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
               >
                 Clear

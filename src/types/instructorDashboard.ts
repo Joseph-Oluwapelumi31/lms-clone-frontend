@@ -10,6 +10,10 @@ export type Course = {
   description: string;
   code: string;
   instructor: Instructor;
+  thumbnail: {
+    url: string;
+    public_id: string;
+  };
   isPublished: boolean;
   students: Student[];
   lessons: string[];

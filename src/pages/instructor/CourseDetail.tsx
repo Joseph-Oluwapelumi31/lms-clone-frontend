@@ -251,7 +251,8 @@ const CourseDetail = () => {
       {/* mobile section */}
       <section className="md:hidden">
         <div className="flex justify-center items-center h-70 bg-bg mb-4">
-          <p className="text-white font-bold text-3xl">{course?.code}</p>
+          {/* <p className="text-white font-bold text-3xl">{course?.code}</p> */}
+          <img src={course?.thumbnail.url} alt={course?.title} className="w-full h-full object-cover" />
         </div>
         <div className="space-y-3">
           <div className="flex flex-col gap-2">
