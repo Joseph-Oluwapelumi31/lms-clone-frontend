@@ -16,7 +16,7 @@ export type Course = {
   };
   isPublished: boolean;
   students: Student[];
-  lessons: string[];
+  lessons: Lesson[];
   createdAt: string;
   updatedAt: string;
   __v: number;
@@ -33,8 +33,11 @@ export type Lesson = {
     title: string;
     type: 'text' | 'video' | 'image' | 'pdf';
     content?: string;
+    media?: {
+      url: string;
+      public_id: string;
+    };
     mediaUrl?: string;
-    thumbnailUrl?: string;
     duration?: number;
     order: number;
     course: string;

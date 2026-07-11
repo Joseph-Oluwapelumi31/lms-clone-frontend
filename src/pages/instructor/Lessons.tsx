@@ -22,6 +22,20 @@ const LessonDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("instruction");
+  const lessonMediaUrl = lesson?.media?.url ?? lesson?.mediaUrl;
+
+  const getTypeBadgeClasses = () => {
+    switch (lesson?.type) {
+      case "video":
+        return "border-blue-200 bg-blue-50 text-blue-700";
+      case "image":
+        return "border-amber-200 bg-amber-50 text-amber-700";
+      case "pdf":
+        return "border-rose-200 bg-rose-50 text-rose-700";
+      default:
+        return "border-emerald-200 bg-emerald-50 text-emerald-700";
+    }
+  };
 
   const getYoutubeEmbedUrl = (url: string) => {
     try {
@@ -50,48 +64,56 @@ const LessonDetail = () => {
   };
 
   const renderLessonMedia = () => {
-    if (!lesson || !lesson.mediaUrl) {
+    if (!lesson || !lessonMediaUrl) {
       return null;
     }
 
     if (lesson.type === "video") {
-      const isYouTube = /(?:youtu\.be|youtube\.com)/i.test(lesson.mediaUrl);
+      const isYouTube = /(?:youtu\.be|youtube\.com)/i.test(lessonMediaUrl);
       return isYouTube ? (
-        <iframe
-          src={getYoutubeEmbedUrl(lesson.mediaUrl)}
-          title={lesson.title || "Lesson video"}
-          style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%" }}
-          frameBorder="0"
-          allowFullScreen
-        />
+        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 shadow-sm">
+          <iframe
+            src={getYoutubeEmbedUrl(lessonMediaUrl)}
+            title={lesson.title || "Lesson video"}
+            className="h-[280px] w-full md:h-[420px]"
+            frameBorder="0"
+            allowFullScreen
+          />
+        </div>
       ) : (
-        <video
-          controls
-          className="w-full rounded-2xl"
-          src={lesson.mediaUrl}
-        >
-          Your browser does not support the video tag.
-        </video>
+        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 p-3 shadow-sm">
+          <video
+            controls
+            className="w-full rounded-2xl"
+            src={lessonMediaUrl}
+          >
+            Your browser does not support the video tag.
+          </video>
+        </div>
       );
     }
 
     if (lesson.type === "image") {
       return (
-        <img
-          src={lesson.mediaUrl}
-          alt={lesson.title || "Lesson image"}
-          className="w-full rounded-2xl object-cover"
-        />
+        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 p-3 shadow-sm">
+          <img
+            src={lessonMediaUrl}
+            alt={lesson.title || "Lesson image"}
+            className="w-full rounded-2xl object-cover"
+          />
+        </div>
       );
     }
 
     if (lesson.type === "pdf") {
       return (
-        <iframe
-          src={lesson.mediaUrl}
-          title={lesson.title || "Lesson PDF"}
-          className="w-full min-h-125 rounded-2xl border"
-        />
+        <div className="overflow-hidden rounded-3xl border border-slate-200 bg-slate-50 shadow-sm">
+          <iframe
+            src={lessonMediaUrl}
+            title={lesson.title || "Lesson PDF"}
+            className="w-full min-h-[420px]"
+          />
+        </div>
       );
     }
 
@@ -102,13 +124,19 @@ const LessonDetail = () => {
     if (!lesson) return null;
 
     if (lesson.type === "text") {
-      return <p className="text-muted whitespace-pre-line">{lesson.content || "No lesson content available."}</p>;
+      return (
+        <div className="rounded-2xl bg-slate-50 p-5">
+          <p className="text-muted whitespace-pre-line leading-7">{lesson.content || "No lesson content available."}</p>
+        </div>
+      );
     }
 
-    if (lesson.mediaUrl) {
+    if (lessonMediaUrl) {
       return (
-        <div className="space-y-4">
-          <p className="text-muted">Media URL: <a href={lesson.mediaUrl} target="_blank" rel="noreferrer" className="text-bg underline">Open resource</a></p>
+        <div className="space-y-4 rounded-2xl bg-slate-50 p-5">
+          <p className="text-sm font-medium text-slate-700">Lesson resource</p>
+          <p className="text-muted">Open the attached material for this lesson.</p>
+          <a href={lessonMediaUrl} target="_blank" rel="noreferrer" className="inline-flex items-center rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white transition hover:opacity-90">Open resource</a>
         </div>
       );
     }
@@ -140,40 +168,47 @@ const LessonDetail = () => {
   }, [lessonId]);
 
   return (
-    <section>
-      {lesson?.mediaUrl && (
-        <div className='lg:hidden' style={{ position: "relative", paddingBottom: "56.25%", height: 0 }}>
-          {renderLessonMedia()}
-        </div>
-      )}
+    <section className="min-h-screen bg-slate-50 px-3 py-4 md:px-6 md:py-6">
+      <div className="mx-auto max-w-6xl">
+        {lessonMediaUrl && (
+          <div className="mb-4 lg:hidden">
+            {renderLessonMedia()}
+          </div>
+        )}
 
-    <div className=" max-w-4x bg-white p-4 md:hidden">
-            
-        <div>
-          <h2 className='text-text font-bold text-xl'>Lecture {lesson?.order}</h2>
-          <div className='text-text font-bold text-sm mb-4'>Week {lesson?.order}. <span className='text-muted'>{lesson?.type} Lesson</span></div>
-          <div className='flex gap-2'>
-            <div className='bg-slate-50 rounded-full py-2 px-4 flex gap-2 text-muted items-center justify-center w-50 text-sm'>
-              <Lock size={15}/>
+        <div className="rounded-3xl bg-white p-4 shadow-sm ring-1 ring-slate-200 md:hidden">
+          <div className="mb-4 flex items-start justify-between gap-3">
+            <div>
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Lecture {lesson?.order}</p>
+              <h2 className="mt-2 text-xl font-bold text-slate-900">{lesson?.title}</h2>
+            </div>
+            <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${getTypeBadgeClasses()}`}>
+              {lesson?.type}
+            </span>
+          </div>
+
+          <div className="mb-4 flex flex-wrap gap-2">
+            <div className="flex items-center gap-2 rounded-full bg-slate-50 px-3 py-2 text-sm text-slate-600">
+              <Lock size={15} className="text-slate-500" />
               <p>Attendance Locked</p>
             </div>
-            <div className='border border- rounded-full flex px-4 gap-2 text-muted items-center text-sm'>
-              <Zap size={15}/>
+            <div className="flex items-center gap-2 rounded-full border border-slate-200 px-3 py-2 text-sm text-slate-600">
+              <Zap size={15} className="text-slate-500" />
               <p>Quiz</p>
             </div>
           </div>
-        </div>
-        <div className="grid grid-cols-2">
+
+          <div className="grid grid-cols-2 gap-2">
             {tabs.map((tab) => {
               const isActive = activeTab === tab.key;
 
               return (
                 <button
                   key={tab.key}
-                  className={`py-4 transition-colors hover:cursor-pointer font-bold text-md mb-4 ${
+                  className={`rounded-2xl py-3 text-sm font-semibold transition ${
                     isActive
-                      ? "text-text border-b-2 border-text"
-                      : "text-muted"
+                      ? "bg-slate-900 text-white"
+                      : "bg-slate-50 text-slate-500"
                   }`}
                   onClick={() => setActiveTab(tab.key)}
                 >
@@ -182,67 +217,67 @@ const LessonDetail = () => {
               );
             })}
           </div>
-        {loading && <p className="text-center text-muted">Loading lesson...</p>}
-        {error && <p className="text-center text-red-600">{error}</p>}
-        {!loading && !error && !lesson && <p className="text-center text-muted">Lesson not found.</p>}
 
-        {activeTab === 'instruction' && 
-          <Instruction bg={'slate-50'}/>
-        }
-        {activeTab === 'overview' &&
+          {loading && <p className="mt-4 text-center text-muted">Loading lesson...</p>}
+          {error && <p className="mt-4 text-center text-red-600">{error}</p>}
+          {!loading && !error && !lesson && <p className="mt-4 text-center text-muted">Lesson not found.</p>}
+
+          {activeTab === "instruction" && <Instruction bg="bg-slate-50" />}
+          {activeTab === "overview" && (
+            <div className="mt-4 rounded-2xl bg-slate-50 p-4">
+              <h2 className="mb-3 text-lg font-bold text-slate-900">Description</h2>
+              <p className="text-muted whitespace-pre-line leading-7">{lesson?.content || "No lesson content available."}</p>
+            </div>
+          )}
+        </div>
+
+        <div className="hidden gap-4 md:grid lg:grid-cols-3">
+          <div className="lg:col-span-2">
+            {lessonMediaUrl && (
+              <div className="mb-4">
+                {renderLessonMedia()}
+              </div>
+            )}
+            <div className="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+              <div className="mb-4 flex items-center justify-between gap-3">
+                <h2 className="text-xl font-bold text-slate-900">About this lesson</h2>
+                <span className={`inline-flex items-center rounded-full border px-3 py-1 text-xs font-semibold ${getTypeBadgeClasses()}`}>
+                  {lesson?.type}
+                </span>
+              </div>
+              {renderLessonOverview()}
+            </div>
+          </div>
+
           <div>
-            <h2 className='font-bold text-text text-lg mb-4'>Description</h2>
-            <p>{lesson?.content}</p>
-
-            
-
-          </div>
-        }
-    </div>
-
-
-    {/* Desktop and tablet section */}
-    <div className='hidden md:block lg:grid lg:grid-cols-3 gap-4 '>
-      <div className='  lg:col-span-2'>
-      {lesson?.mediaUrl && (
-        <div className='hidden rounded-2xl lg:block' style={{ position: "relative", paddingBottom: "56.25%", height: 0 }}>
-          {renderLessonMedia()}
-        </div>
-      )}
-        <div className='p-6 rounded-2xl my-4 bg-white'>
-          <h2 className='text-text font-bold text-xl mb-4'>About this lesson</h2>
-          {renderLessonOverview()}
-        </div>
-      </div>
-      <div>
-        <div className='bg-white p-6 rounded-2xl my-4'>
-          <h2 className='text-text font-bold text-xl mb-4'>{lesson?.title}</h2>
-          <div className='flex flex-col gap-4'>
-            <Link to={''}>
-              <div className='flex justify-center items-center gap-2 rounded-full py-3 bg-slate-50'>
-                <Check className='bg-green-800 text-white rounded-full p-2 w-6 h-6 '/>
-                <p className='text-green-800'>Attendance Marked</p>
+            <div className="my-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
+              <h2 className="mb-4 text-xl font-bold text-slate-900">{lesson?.title}</h2>
+              <div className="flex flex-col gap-3">
+                <Link to={""}>
+                  <div className="flex items-center justify-center gap-2 rounded-full bg-emerald-50 py-3 text-sm font-semibold text-emerald-700">
+                    <Check className="h-5 w-5 rounded-full bg-emerald-700 p-0.5 text-white" />
+                    <p>Attendance Marked</p>
+                  </div>
+                </Link>
+                <Link to={""}>
+                  <div className="flex items-center justify-center gap-2 rounded-full border border-blue-600 py-3 text-sm font-semibold text-blue-700 transition hover:bg-blue-600 hover:text-white">
+                    <Zap className="h-4 w-4" />
+                    <p>Take Quiz</p>
+                  </div>
+                </Link>
+                <Link to={""}>
+                  <div className="flex items-center justify-center gap-2 rounded-full border border-slate-300 py-3 text-sm font-semibold text-slate-600 transition hover:bg-slate-900 hover:text-white">
+                    <Download className="h-4 w-4" />
+                    <p>Lesson Resources</p>
+                  </div>
+                </Link>
               </div>
-            </Link>
-            <Link to={''}>
-              <div className='flex justify-center items-center gap-2 rounded-full py-3 border border-blue-600 text-blue-800 hover:bg-blue-800 hover:text-white transition-all duration-200 '>
-                <Zap className='  rounded-full w-4 h-6 '/>
-                <p>Take Quiz</p>
-              </div>
-            </Link>
-            <Link to={''}>
-              <div className='flex justify-center items-center gap-2 rounded-full py-3 border border-[#6c757d] text-muted hover:bg-[#6c757d] hover:text-white transition-all duration-200 '>
-                <Download className='rounded-full w-4 h-6 '/>
-                <p>Lesson Resources</p>
-              </div>
-            </Link>
+            </div>
+
+            <Instruction bg="bg-white" />
           </div>
         </div>
-
-        <Instruction bg={'white'}/>
       </div>
-      
-    </div>
     </section>
     
     

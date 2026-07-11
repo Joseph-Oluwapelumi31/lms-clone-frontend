@@ -31,6 +31,7 @@ import InstructorProfile from "./pages/instructor/Profile";
 import CourseDetail from "./pages/instructor/CourseDetail";
 import EditCourse from "./pages/instructor/EditCourse";
 import InstructorLessonDetail from './pages/instructor/Lessons'
+import CreateLesson from './pages/instructor/CreateLesson'
 
 
 // Admin pages
@@ -90,6 +91,7 @@ export default function App() {
               <Route path="profile" element={<InstructorProfile />} />
               <Route path="courses/:id" element={<CourseDetail/>}/>
               <Route path="courses/:id/edit" element={<EditCourse/>}/>
+              <Route path=":courseId/lessons/new" element={<CreateLesson/>}/>
               <Route path=":courseId/lesson/:lessonId" element={<InstructorLessonDetail/>}/>
               <Route path="*" element={<NotFound />} />
 

@@ -90,7 +90,6 @@ const totalLessons = courses.reduce((sum, courses) =>{
       const fetchData = async () => {
         try {
           const res  = await api.get<CoursesResponse>("/courses");
-          console.log(res.data.data);
           setCourses(res.data.data);
         } catch (error) {
           console.error(error);
