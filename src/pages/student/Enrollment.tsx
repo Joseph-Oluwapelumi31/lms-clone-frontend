@@ -1,8 +1,8 @@
-import { Calendar, NotebookText, Plus } from "lucide-react";
+import { Calendar, NotebookText } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { api } from "../../lib/api";
-import type { Course } from "../../types/instructorDashboard";
+import type { Course, Student } from "../../types/instructorDashboard";
 import { useAuth } from "../../hooks/useAuth";
 
 type CourseResponse = {
@@ -12,14 +12,15 @@ type CourseResponse = {
 
 const Enrollment = () => {
   const { user } = useAuth();
+
   const [courses, setCourses] = useState<Course[]>([]);
   const [loading, setLoading] = useState(true);
+  const [enrollingId, setEnrollingId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchCourses = async () => {
       try {
         const res = await api.get<CourseResponse>("/courses/published");
-        console.log(res.data);
         setCourses(res.data.data);
       } catch (error) {
         console.error("Failed to fetch courses:", error);
@@ -31,119 +32,149 @@ const Enrollment = () => {
     fetchCourses();
   }, []);
 
-  const handleEnroll = async(id : string)=>{
-    await api.post(`/courses/${id}/enroll`); 
-  }
+  const handleEnroll = async (id: string) => {
+    try {
+      setEnrollingId(id);
+
+      await api.post(`/courses/${id}/enroll`);
+
+      setCourses((prev) =>
+        prev.map((course) =>
+          course._id === id
+            ? {
+                ...course,
+                students: [...course.students, { _id: user!.id } as Student],
+              }
+            : course
+        )
+      );
+    } catch (error) {
+      console.error("Enrollment failed:", error);
+    } finally {
+      setEnrollingId(null);
+    }
+  };
 
   return (
     <section className="relative">
-      {/* Title mobile section */}
-      <div className="md:hidden">
-        <h1 className="text-text font-bold text-xl mb-2">Available Courses</h1>
-        <p className="text-muted text-sm">2025/2026 • Rain Semester</p>
-      </div>
+      {/* Heading */}
+      <div className="mb-8">
+        <h1 className="text-2xl font-bold text-text">
+          Explore Available Courses
+        </h1>
 
-      {/* Title desktop section */}
-      <div className="md:block hidden">
-        <h1 className="text-text font-bold text-xl mb-2">Explore Courses</h1>
-        <p className="text-muted text-sm">
-          Discover new subjects and enroll for session 2025/2026 (Rain Semester)
+        <p className="text-muted mt-2">
+          Discover new courses and enroll for the current semester.
         </p>
       </div>
 
       {loading ? (
-        <p className="text-muted mt-4">Loading courses...</p>
+        <div className="py-16 text-center text-muted">
+          Loading courses...
+        </div>
       ) : (
-        <>
-          {/* Course cards md and lg section */}
-          <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-            {courses.map((course) => {
-              const isEnrolled = course.students?.some((studentId) => {
-                return studentId.toString() === user?.id?.toString();
-              });
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+          {courses.map((course) => {
+            const isEnrolled = course.students.some(
+              (student: Student) =>
+                student._id?.toString() === user?.id?.toString() ||
+                student.toString?.() === user?.id?.toString()
+            );
 
-              return (
-                <div
-                  key={course._id}
-                  className="md:flex md:flex-col mt-4 bg-white rounded-xl gap-2 shadow-md hidden hover:shadow-md hover:-translate-y-1 transition-all cursor-pointer duration-300"
-                >
-                  <div>
-                    <h3 className="font-bold h-30 rounded-2xl text-xl bg-bg text-white items-center flex justify-center">
+            return (
+              <div
+                key={course._id}
+                className="overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
+              >
+                {/* Thumbnail */}
+                <img
+                  src={
+                    course.thumbnail?.url ||
+                    "https://placehold.co/600x400?text=Course"
+                  }
+                  alt={course.title}
+                  className="h-52 w-full object-cover"
+                />
+
+                {/* Content */}
+                <div className="p-5">
+                  {/* Code + Status */}
+                  <div className="mb-4 flex items-center justify-between">
+                    <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
                       {course.code}
-                    </h3>
+                    </span>
+
+                    <span
+                      className={`rounded-full px-3 py-1 text-xs font-semibold ${
+                        isEnrolled
+                          ? "bg-green-100 text-green-700"
+                          : "bg-red-100 text-red-700"
+                      }`}
+                    >
+                      {isEnrolled ? "Enrolled" : "Available"}
+                    </span>
                   </div>
 
-                  <div className="p-4">
-                    <h3 className="text-text font-bold">{course.title}</h3>
+                  {/* Title */}
+                  <h2 className="mb-3 line-clamp-2 text-xl font-bold text-text">
+                    {course.title}
+                  </h2>
 
-                    <div className="flex justify-between items-center">
-                      <div className="mb-4">
-                        <NotebookText className="h-4 w-4 text-muted inline mr-2" />
-                        <span className="text-muted">
-                          {isEnrolled ? "Enrolled" : "Not Enrolled"}
-                        </span>
-                      </div>
+                  {/* Description */}
+                  <p className="mb-5 line-clamp-3 text-sm leading-6 text-muted">
+                    {course.description}
+                  </p>
+
+                  {/* Stats */}
+                  <div className="mb-5 flex items-center justify-between text-sm text-muted">
+                    <div className="flex items-center gap-2">
+                      <NotebookText className="h-4 w-4" />
+                      <span>{course.lessons.length} Lessons</span>
                     </div>
 
-                    <p className="text-sm text-muted mb-4 line-clamp-3">
-                      {course.description}
-                    </p>
-
-                    <button className="flex items-center w-full cursor-pointer justify-center border border-[#dc3545] text-[#dc3545] hover:text-white hover:bg-[#dc3545] p-2 rounded-full hover:-translate-y-1 hover:shadow-md transition-all duration-300">
-                      {isEnrolled ? "Enrolled" : "Enroll Now"}
-                    </button>
+                    <span>{course.students.length} Students</span>
                   </div>
+
+                  {/* Button */}
+                  <button
+                    disabled={isEnrolled || enrollingId === course._id}
+                    onClick={() => handleEnroll(course._id)}
+                    className={`w-full rounded-xl py-3 font-semibold transition-all duration-300 ${
+                      isEnrolled
+                        ? "cursor-not-allowed bg-green-600 text-white"
+                        : enrollingId === course._id
+                        ? "cursor-wait bg-gray-400 text-white"
+                        : "bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg"
+                    }`}
+                  >
+                    {isEnrolled
+                      ? "Enrolled"
+                      : enrollingId === course._id
+                      ? "Enrolling..."
+                      : "Enroll Now"}
+                  </button>
                 </div>
-              );
-            })}
-          </div>
-
-          {/* Course cards mobile section */}
-          <div className="md:hidden">
-            {courses.map((course) => {
-              const isEnrolled = course.students?.some((studentId) => {
-                return studentId.toString() === user?.id?.toString();
-              });
-
-              return (
-                <div
-                  key={course._id}
-                  className="flex justify-between items-center p-4 mt-8 bg-white rounded-xl gap-3 h-24 shadow-md"
-                >
-                  <div className="flex items-center gap-3 flex-1 min-w-0">
-                    <div className="px-3 py-1 h-15 rounded-sm text-xs font-bold bg-bg text-white flex items-center justify-center">
-                      {course.code}
-                    </div>
-
-                    <div className="min-w-0">
-                      <h3 className="font-bold truncate">{course.title}</h3>
-                      <p className="text-sm text-muted truncate">
-                        {isEnrolled ? "Enrolled" : "Not Enrolled"}
-                      </p>
-                    </div>
-                  </div>
-
-                  <Plus onClick={() => handleEnroll(course._id)} className="h-10 w-10 rounded-full cursor-pointer text-blue-500 bg-slate-50 p-2" />
-                </div>
-              );
-            })}
-          </div>
-        </>
+              </div>
+            );
+          })}
+        </div>
       )}
 
-      {/* Absolute CTA */}
-      <div className="absolute top-0 right-0 hidden md:block">
-        <div className="text-[#0d6efd] border border-[#0d6efd] flex items-center gap-1 px-4 py-2 font-medium rounded-full text-xs">
-          <Calendar className="h-4 w-4 rounded-full" />
-          <p>Session: 2025/2026 (Harmattan)</p>
+      {/* CTA */}
+      <div className="mt-10 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex items-center gap-2 rounded-full border border-blue-600 px-4 py-2 text-blue-600">
+          <Calendar className="h-4 w-4" />
+          <span className="text-sm font-medium">
+            Session: 2025/2026 (Rain Semester)
+          </span>
         </div>
 
         <Link
-          to={"/student/courses"}
-          className="flex items-center gap-1 mt-4 bg-white text-text px-4 py-2 rounded-full shadow-md hover:shadow-md hover:-translate-y-1 transition-all cursor-pointer duration-300"
+          to="/student/courses"
+          className="flex items-center justify-center gap-2 rounded-xl bg-white px-6 py-3 font-medium shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-lg"
         >
-          <NotebookText className="h-6 w-6 rounded-full cursor-pointer" />
-          <p>My Enrolled Courses</p>
+          <NotebookText className="h-5 w-5" />
+          My Enrolled Courses
         </Link>
       </div>
     </section>

@@ -39,7 +39,7 @@ export default function Dashboard() {
   
 
   return (
-    <section>
+    <section className="lg:relative flex flex-col gap-6">
       {/* mobile section */}
       <div className="flex justify-between lg:hidden">
         <div className="mb-2">
@@ -66,7 +66,7 @@ export default function Dashboard() {
 
       {/* desktop section */}
       <div className="lg:flex lg:flex-col gap-2 justify-between bg-bg text-white p-12 rounded-xl hidden">
-        <h1 className="font-bold text-2xl">Hey, SCI/24/25/0575 ✨</h1>
+        <h1 className="font-bold text-2xl">Hey, {user?.name} ✨</h1>
         <p>
           <span className="text-muted">Semester:</span> Rain •{" "}
           <span className="text-muted">Session:</span> 2025/2026
@@ -112,42 +112,61 @@ export default function Dashboard() {
         </div>
 
         {loading ? (
-          <p className="text-sm text-muted">Loading courses...</p>
-        ) : courses.length === 0 ? (
-          <p className="text-sm text-muted">Not enrolled in any course</p>
-        ) : (
-          <div className="flex flex-col gap-4">
-            {courses.map((course) => (
-              <div
-                key={course._id}
-                className="flex flex-col bg-white rounded-xl gap-2 max-w-70 shadow-md"
-              >
-                <div>
-                  <h3 className="font-bold h-30 rounded-2xl text-xl bg-bg text-white items-center flex justify-center">
-                    {course?.title || "COURSE"}
-                  </h3>
-                </div>
+            <p className="text-sm text-muted">Loading courses...</p>
+          ) : courses.length === 0 ? (
+            <div className="flex h-60 items-center justify-center rounded-2xl bg-white shadow-sm">
+              <p className="text-muted">You are not enrolled in any course yet.</p>
+            </div>
+          ) : (
+            <div className="mx-auto mt-4 grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
+              {courses.slice(0, 2).map((course) => (
+                <div
+                  key={course._id}
+                  className="flex h-full flex-col overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:-translate-y-1 hover:shadow-xl"
+                >
+                  {/* Thumbnail */}
+                  <img
+                    src={course.thumbnail?.url}
+                    alt={course.title}
+                    className="aspect-video w-full object-cover"
+                  />
 
-                <div className="p-4">
-                  <h3 className="text-text font-bold mb-4">{course.title}</h3>
-                  <div className="flex justify-between items-center">
-                    <p className="text-sm text-muted">
-                      {course.createdAt
-                        ? new Date(course.createdAt).toLocaleDateString()
-                        : "No date"}
+                  {/* Content */}
+                  <div className="flex flex-1 flex-col p-5">
+                    {/* Course Code */}
+                    <span className="inline-flex w-fit rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
+                      {course.code}
+                    </span>
+              
+                    {/* Title */}
+                    <h3 className="mt-4 text-lg font-bold text-text line-clamp-2">
+                      {course.title}
+                    </h3>
+              
+                    {/* Description */}
+                    <p className="mt-2 line-clamp-3 text-sm leading-6 text-muted">
+                      {course.description}
                     </p>
-                    <Link
-                      to={`/student/courses/${course._id}`}
-                      className="bg-bg text-white px-4 py-2 rounded-full"
-                    >
-                      View
-                    </Link>
+              
+                    {/* Footer */}
+                    <div className="mt-auto pt-6 flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-sm text-muted">
+                        <NotebookText className="h-4 w-4" />
+                        <span>{course.lessons.length} Lessons</span>
+                      </div>
+              
+                      <Link
+                        to={`/student/courses/${course._id}`}
+                        className="rounded-xl bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700"
+                      >
+                        Continue
+                      </Link>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
+              ))}
+            </div>
+          )}
       </div>
 
       <div className="mt-6">

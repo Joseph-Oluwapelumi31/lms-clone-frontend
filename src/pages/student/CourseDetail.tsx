@@ -2,18 +2,17 @@ import { useParams, Link } from "react-router-dom";
 import { api } from "../../lib/api";
 import { useState, useEffect } from "react";
 import type { Course, Lesson } from "../../types/instructorDashboard";
-import { Play, NotebookText, MoveLeft, ChevronDown, Check, MessageCircleMore } from "lucide-react";
+import { Play, NotebookText, MoveLeft, ChevronDown, Check, MessageCircleMore} from "lucide-react";
 
 type CoursesResponse = {
   data: {
     course: Course;
+
     enrollmentCount: number;
   };
 };
 
-type LessonsResponse = {
-  data: Lesson[];
-};
+
 
 type Tab = {
   key: string;
@@ -29,9 +28,8 @@ const tabs: Tab[] = [
 const CourseDetail = () => {
   const [course, setCourse] = useState<Course | null>(null);
   const [activeTab, setActiveTab] = useState("about");
-  const { id } = useParams();
+  const { id } = useParams<{ id: string }>();
   const [loading, setLoading] = useState(true);
-  const [lessons, setLessons] = useState<Lesson[]>([]);
   const [readMore, setReadMore] = useState(false);
   const [openLessonId, setOpenLessonId] = useState<string | null>(null);
 
@@ -39,9 +37,7 @@ const CourseDetail = () => {
     setReadMore((prev) => !prev);
   };
 
-  const handleToggleLecture = (lessonId: string) => {
-    setOpenLessonId((prev) => (prev === lessonId ? null : lessonId));
-  };
+ 
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -49,6 +45,7 @@ const CourseDetail = () => {
         setLoading(true);
         const res = await api.get<CoursesResponse>(`/courses/${id}`);
         setCourse(res.data.data.course);
+        console.log("lessons", res.data.data.course);
       } catch (error) {
         console.log("error", error);
       } finally {
@@ -61,20 +58,7 @@ const CourseDetail = () => {
     }
   }, [id]);
 
-  useEffect(() => {
-    const fetchLessons = async () => {
-      try {
-        const res = await api.get<LessonsResponse>(`/lessons/course/${id}`);
-        setLessons(res.data.data);
-      } catch (error) {
-        console.log("error", error);
-      }
-    };
 
-    if (id) {
-      fetchLessons();
-    }
-  }, [id]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -85,11 +69,16 @@ const CourseDetail = () => {
       {/* mobile section */}
       <section className="md:hidden">
         <div className="flex justify-center items-center h-70 bg-bg mb-4">
-          <p className="text-white font-bold text-3xl">{course?.code}</p>
+          {/* <p className="text-white font-bold text-3xl">{course?.code}</p> */}
+          <img src={course?.thumbnail.url} alt={course?.title} className="w-full h-full object-cover" />
         </div>
-        <div>
-          <h2 className="font-bold text-xl">{course?.code}: {course?.title}</h2>
-          <p className="text-muted ">{lessons.length} lessons</p>
+        <div className="space-y-3">
+          <div className="flex flex-col gap-2">
+            <h2 className="font-bold text-xl">{course?.code}: {course?.title}</h2>
+            <p className="text-muted ">{course?.lessons.length ?? 0} lessons</p>
+          </div>
+
+          
         </div>
 
         <div className="grid grid-cols-3">
@@ -122,7 +111,12 @@ const CourseDetail = () => {
             />
           )}
 
-          {activeTab === "lessons" && <Lessons lessons={lessons} />}
+          {activeTab === "lessons" && (
+            <Lessons
+              lessons={course?.lessons || []}
+              id={id}
+            />
+          )}
 
           {activeTab === "discussion" && <Discussions />}
         </div>
@@ -138,12 +132,15 @@ const CourseDetail = () => {
           <p className="text-sm">Back to Courses</p>
         </Link>
 
-        <div>
-          <h1 className="font-bold text-2xl mb-2">{course?.title}</h1>
-          <p className="text-text flex gap-2 text-sm mb-4 items-center">
-            <NotebookText size={20} />
-            <span>Module overview</span>
-          </p>
+        <div className="flex flex-col gap-4">
+          <div>
+            <h1 className="font-bold text-2xl mb-2">{course?.title}</h1>
+            <p className="text-text flex gap-2 text-sm mb-4 items-center">
+              <NotebookText size={20} />
+              <span>Module overview</span>
+            </p>
+          </div>
+          
         </div>
         
         <div className="grid md:grid-cols-1 lg:grid-cols-3 gap-6">
@@ -165,50 +162,56 @@ const CourseDetail = () => {
           <h2 className="font-bold text-lg mb-4 mt-8">Course Syllabus</h2>
 
           <div className="flex flex-col gap-4">
-            {lessons.map((lesson) => {
+            {course?.lessons.map((lesson) => {
               const isOpen = openLessonId === lesson._id;
 
               return (
                 <div
                   key={lesson._id}
-                  className="flex flex-col bg-white py-4 px-6 shadow-sm rounded-sm"
+                  className="bg-white py-4 px-6 shadow-sm rounded-sm"
                 >
-                  <div
-                    className="flex justify-between bg-white mb-4 border-b pb-4 border-slate-300 cursor-pointer"
-                    onClick={() => handleToggleLecture(lesson._id)}
-                  >
-                    <div className="flex gap-8">
-                      <p className="font-bold text-muted">Week {lesson.order}</p>
-                      <p className="font-bold">
-                        {lesson.title || `Lecture ${lesson.order}`}
-                      </p>
-                    </div>
-
-                    <ChevronDown
-                      className={`transition-transform duration-200 ${
-                        isOpen ? "rotate-180" : ""
-                      }`}
-                    />
-                  </div>
-
-                  {isOpen && (
-                    <div className="flex justify-between items-center">
-                      <div className="flex text-sm items-center gap-2">
-                        <Play
-                          size={8}
-                          className="text-white bg-bg p-1 w-4 h-4 rounded-full"
-                        />
-                        <p className="text-text">Available now</p>
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                      <div className="flex gap-8 items-center">
+                        <p className="font-bold text-muted">Week {lesson.order}</p>
+                        <p className="font-bold">
+                          {lesson.title || `Lecture ${lesson.order}`}
+                        </p>
                       </div>
-
-                      <Link
-                        to={`/instructor/courses/${id}/lessons/${lesson._id}`}
-                        className="bg-bg px-4 py-2 rounded-full text-white hover:bg-bg/90 hover:shadow-md transition-all duration-200"
-                      >
-                        Start lesson
-                      </Link>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setOpenLessonId(prev => prev === lesson._id ? null : lesson._id)}
+                          className="inline-flex items-center justify-center rounded-full bg-slate-900 px-3 py-2 text-sm font-medium text-white"
+                        >
+                          <ChevronDown
+                            className={`transition-transform duration-200 ${
+                              isOpen ? "rotate-180" : ""
+                            }`}
+                          />
+                        </button>
+                      </div>
                     </div>
-                  )}
+
+                    {isOpen && (
+                      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                        <div className="flex text-sm items-center gap-2">
+                          <Play
+                            size={12}
+                            className="text-white bg-bg p-1 w-5 h-5 rounded-full"
+                          />
+                          <p className="text-text">Available now</p>
+                        </div>
+
+                        <Link
+                          to={`/student/${id}/lesson/${lesson._id}`}
+                          className="bg-bg px-4 py-2 rounded-full text-white hover:bg-bg/90 hover:shadow-md transition-all duration-200"
+                        >
+                          Start lesson
+                        </Link>
+                      </div>
+                    )}
+                  </div>
                 </div>
               );
             })}
@@ -243,13 +246,9 @@ const CourseDetail = () => {
           </div>
           </div>
         </div>
-        
-        
-
-
-        
-        
       </section>
+
+
     </>
   );
 };
@@ -263,6 +262,7 @@ type AboutProps = {
 
 type LessonsProps = {
   lessons: Lesson[];
+  id?: string;
 };
 
 const About = ({
@@ -301,7 +301,7 @@ const About = ({
   );
 };
 
-const Lessons = ({ lessons }: LessonsProps) => {
+const Lessons = ({ lessons, id }: LessonsProps) => {
   if (lessons.length === 0) {
     return (
       <div>
@@ -315,20 +315,28 @@ const Lessons = ({ lessons }: LessonsProps) => {
       {lessons.map((lesson) => (
         <div
           key={lesson._id}
-          className="bg-slate-50 p-4 flex gap-4 items-center justify-between md:hidden"
+          className="bg-slate-50 p-4 flex flex-col gap-4 rounded-2xl"
         >
-          <p className="font-bold text-2xl text-muted">{lesson.order}</p>
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4">
+              <p className="font-bold text-2xl text-muted">{lesson.order}</p>
+              <div>
+                <h3 className="font-semibold text-sm">
+                  {lesson.title || `Lecture ${lesson.order}`}
+                </h3>
+                <p className="text-sm text-muted">{lesson.type} lesson</p>
+              </div>
+            </div>
 
-          <div className="flex-1">
-            <h3 className="font-semibold text-sm">
-              {lesson.title || `Lecture ${lesson.order}`}
-            </h3>
-            <p className="text-sm text-muted">{lesson.type} lesson</p>
+            <div className="flex flex-wrap gap-2">
+              <Link
+                to={id ? `/student/${id}/lesson/${lesson._id}` : "#"}
+                className="rounded-full bg-bg px-3 py-2 text-sm font-medium text-white"
+              >
+                Open
+              </Link>
+            </div>
           </div>
-
-          <Link to={lesson._id}>
-            <Play size={30} className="bg-bg p-2 rounded-full text-white" />
-          </Link>
         </div>
       ))}
     </div>
@@ -354,5 +362,8 @@ const Discussions = () => {
     </>
   );
 };
+
+
+
 
 export default CourseDetail;

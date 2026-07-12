@@ -1,4 +1,4 @@
-import { ChevronRight, CirclePlus, NotebookText, SearchIcon } from "lucide-react";
+import {CirclePlus, NotebookText, SearchIcon } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { api } from "../../lib/api";
@@ -55,60 +55,54 @@ const Courses = () => {
       </div>
 
       {/* Mobile section */}
-      {courses.map((course) => (
-        <div
-          key={course._id}
-          className="flex md:hidden justify-between items-center p-4 mt-8 bg-white rounded-xl gap-3 h-24 shadow-md"
-        >
-          <div className="flex items-center gap-3 flex-1 min-w-0">
-            <div className="px-3 py-1 h-15 rounded-sm text-xs font-bold bg-bg text-white flex items-center justify-center">
-              {course.code}
-            </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mt-8">
+  {courses.map((course) => (
+    <Link
+      key={course._id}
+      to={`/courses/${course._id}`}
+      className="group overflow-hidden rounded-2xl bg-white shadow-md transition-all duration-300 hover:-translate-y-2 hover:shadow-xl"
+    >
+      <img
+        src={course.thumbnail?.url}
+        alt={course.title}
+        className="h-48 w-full object-cover"
+      />
 
-            <div className="min-w-0">
-              <h3 className="font-semibold truncate">{course.title}</h3>
-              <p className="text-sm text-muted truncate">{course.description}</p>
-            </div>
-          </div>
+      <div className="p-5">
+        <div className="flex items-center justify-between mb-3">
+          <span className="rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-700">
+            {course.code}
+          </span>
 
-          <ChevronRight className="h-5 w-5 text-muted" />
+          <span className="text-sm text-muted">
+            {course.lessons.length} Lessons
+          </span>
         </div>
-      ))}
 
-      {/* Desktop section */}
-      <div className="hidden md:grid md:grid-cols-2 lg:grid-cols-3 gap-6 mt-8">
-        {courses.map((course) => (
-          <div
-            key={course._id}
-            className="flex flex-col bg-white rounded-xl shadow-md hover:shadow-md hover:-translate-y-1 transition-all duration-300 overflow-hidden"
-          >
-            <div>
-              <h3 className="font-bold h-30 text-xl bg-bg text-white items-center flex justify-center">
-                {course.code}
-              </h3>
-            </div>
+        <h2 className="font-bold text-lg mb-2 line-clamp-2">
+          {course.title}
+        </h2>
 
-            <div className="p-4 flex flex-col flex-1">
-              <h3 className="text-text font-bold mb-4">{course.title}</h3>
-              <p className="text-sm text-muted mb-4 line-clamp-4">{course.description}</p>
+        <p className="text-sm text-muted mb-5 line-clamp-3">
+          {course.description}
+        </p>
 
-              <div className="flex justify-between items-center mt-auto">
-                <div>
-                  <NotebookText className="h-4 w-4 text-muted inline mr-2" />
-                  <span className="text-muted text-sm">Nov 11</span>
-                </div>
-
-                <Link
-                  to={`/courses/${course._id}`}
-                  className="bg-blue-500 text-white px-4 py-2 rounded-full"
-                >
-                  Continue
-                </Link>
-              </div>
-            </div>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-sm text-muted">
+            <NotebookText className="h-4 w-4" />
+            <span>{course.students.length} Students</span>
           </div>
-        ))}
+
+          <Link 
+            to={`/student/courses/${course._id}`}
+            className="rounded-full bg-blue-600 px-4 py-2 text-sm font-medium text-white transition group-hover:bg-blue-700">
+            Continue
+          </Link>
+        </div>
       </div>
+    </Link>
+  ))}
+</div>
     </section>
   );
 };
