@@ -17,7 +17,7 @@ const tabs: Tab[] = [
 ]
 
 const LessonDetail = () => {
-  const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>();
+  const {lessonId } = useParams<{ courseId: string; lessonId: string }>();
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
