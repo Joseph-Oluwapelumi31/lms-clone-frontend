@@ -32,6 +32,7 @@ import CourseDetail from "./pages/instructor/CourseDetail";
 import EditCourse from "./pages/instructor/EditCourse";
 import InstructorLessonDetail from './pages/instructor/Lessons'
 import CreateLesson from './pages/instructor/CreateLesson'
+import EditLesson from './pages/instructor/EditLesson'
 
 
 // Admin pages
@@ -93,6 +94,7 @@ export default function App() {
               <Route path="courses/:id/edit" element={<EditCourse/>}/>
               <Route path=":courseId/lessons/new" element={<CreateLesson/>}/>
               <Route path=":courseId/lesson/:lessonId" element={<InstructorLessonDetail/>}/>
+              <Route path=":courseId/lesson/:lessonId/edit" element={<EditLesson/>}/>
               <Route path="*" element={<NotFound />} />
 
             </Route>

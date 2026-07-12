@@ -1,4 +1,3 @@
-
 import { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
@@ -13,7 +12,7 @@ import {
 } from "lucide-react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { api } from "../../lib/api";
-import type { Course } from "../../types/instructorDashboard";
+import type { Course, Lesson } from "../../types/instructorDashboard";
 
 type LessonType = "text" | "video" | "image" | "pdf";
 
@@ -29,6 +28,10 @@ type CourseResponse = {
   data: {
     course: Course;
   };
+};
+
+type LessonResponse = {
+  data: Lesson;
 };
 
 const lessonTypeOptions: Array<{
@@ -63,11 +66,12 @@ const lessonTypeOptions: Array<{
   },
 ];
 
-const CreateLesson = () => {
-  const { courseId } = useParams<{ courseId: string }>();
+const EditLesson = () => {
+  const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>();
   const navigate = useNavigate();
 
   const [course, setCourse] = useState<Course | null>(null);
+  const [lesson, setLesson] = useState<Lesson | null>(null);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState("");
@@ -92,13 +96,13 @@ const CreateLesson = () => {
   }, [file]);
 
   useEffect(() => {
-    if (!courseId) {
-      setErrorMessage("Course route is missing.");
-      setInitialLoading(false);
-      return;
-    }
-
     const fetchCourse = async () => {
+      if (!courseId) {
+        setErrorMessage("Course route is missing.");
+        setInitialLoading(false);
+        return;
+      }
+
       try {
         setInitialLoading(true);
         const response = await api.get<CourseResponse>(`/courses/${courseId}`);
@@ -111,8 +115,42 @@ const CreateLesson = () => {
       }
     };
 
-    fetchCourse();
-  }, [courseId]);
+    const fetchLesson = async () => {
+      if (!lessonId) {
+        setErrorMessage("Lesson route is missing.");
+        setInitialLoading(false);
+        return;
+      }
+
+      try {
+        setInitialLoading(true);
+        const response = await api.get<LessonResponse>(`/lessons/${lessonId}`);
+        const lessonData = response.data.data;
+
+        setLesson(lessonData);
+        setFormData({
+          title: lessonData.title ?? "",
+          type: lessonData.type ?? "text",
+          content: lessonData.content ?? "",
+          duration: lessonData.duration ? String(lessonData.duration) : "",
+          order: lessonData.order ? String(lessonData.order) : "",
+        });
+      } catch (error) {
+        console.error("Could not fetch lesson", error);
+        setErrorMessage("Unable to load the lesson details right now.");
+      } finally {
+        setInitialLoading(false);
+      }
+    };
+
+    if (courseId) {
+      fetchCourse();
+    }
+
+    if (lessonId) {
+      fetchLesson();
+    }
+  }, [courseId, lessonId]);
 
   useEffect(() => {
     return () => {
@@ -148,12 +186,16 @@ const CreateLesson = () => {
   };
 
   const resetForm = () => {
+    if (!lesson) {
+      return;
+    }
+
     setFormData({
-      title: "",
-      type: "text",
-      content: "",
-      duration: "",
-      order: "",
+      title: lesson.title ?? "",
+      type: lesson.type ?? "text",
+      content: lesson.content ?? "",
+      duration: lesson.duration ? String(lesson.duration) : "",
+      order: lesson.order ? String(lesson.order) : "",
     });
     setFile(null);
     setErrorMessage("");
@@ -163,8 +205,8 @@ const CreateLesson = () => {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    if (!courseId) {
-      setErrorMessage("Course route is missing.");
+    if (!lessonId) {
+      setErrorMessage("Lesson route is missing.");
       return;
     }
 
@@ -188,11 +230,6 @@ const CreateLesson = () => {
         return;
       }
 
-      if (isMediaLesson && !file) {
-        setErrorMessage(`${selectedType.label} lessons require a media file upload.`);
-        return;
-      }
-
       if (formData.duration && Number.isNaN(numericDuration)) {
         setErrorMessage("Lesson duration must be a number of minutes.");
         return;
@@ -203,39 +240,21 @@ const CreateLesson = () => {
         return;
       }
 
-      const payload = new FormData();
-      payload.append("title", cleanedTitle);
-      payload.append("type", formData.type);
+      const payload = {
+        title: cleanedTitle,
+        type: formData.type,
+        content: cleanedContent || undefined,
+        duration: formData.duration ? numericDuration : undefined,
+        order: formData.order ? numericOrder : undefined,
+      };
 
-      if (cleanedContent) {
-        payload.append("content", cleanedContent);
-      }
+      await api.patch(`/lessons/${lessonId}`, payload);
 
-      if (formData.duration) {
-        payload.append("duration", String(numericDuration));
-      }
-
-      if (formData.order) {
-        payload.append("order", String(numericOrder));
-      }
-
-      if (file) {
-        payload.append("file", file);
-      }
-
-      const response = await api.post(`/lessons/course/${courseId}`, payload);
-      const lessonId = response.data?.data?._id;
-
-      setSuccessMessage("Lesson created successfully.");
-
-      if (lessonId) {
-        navigate(`/instructor/${courseId}/lesson/${lessonId}`);
-      } else {
-        navigate(`/instructor/courses/${courseId}`);
-      }
+      setSuccessMessage("Lesson updated successfully.");
+      navigate(`/instructor/${courseId}/lesson/${lessonId}`);
     } catch (error: unknown) {
-      console.error("Failed to create lesson", error);
-      setErrorMessage("Something went wrong while creating the lesson. Please try again.");
+      console.error("Failed to update lesson", error);
+      setErrorMessage("Something went wrong while updating the lesson. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -263,12 +282,12 @@ const CreateLesson = () => {
               Instructor workspace
             </p>
             <h1 className="mt-2 text-2xl font-bold text-slate-900 md:text-3xl">
-              Create a lesson
+              Edit lesson
             </h1>
             <p className="mt-2 text-sm text-slate-600">
               {initialLoading
-                ? "Loading course details..."
-                : `Publish new content for ${course?.title ?? "your course"}.`}
+                ? "Loading lesson details..."
+                : `Update the lesson content for ${course?.title ?? "your course"}.`}
             </p>
           </div>
 
@@ -366,9 +385,9 @@ const CreateLesson = () => {
                         <UploadCloud size={18} />
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-slate-800">Click to upload a file</p>
+                        <p className="text-sm font-semibold text-slate-800">Click to replace the existing file</p>
                         <p className="mt-1 text-xs text-slate-500">
-                          Supported: {formData.type === "video" ? "MP4, WEBM, MOV" : formData.type === "image" ? "PNG, JPG, WEBP" : "PDF only"}
+                          The current API stores the original media asset. This upload is kept for future media replacement support.
                         </p>
                       </div>
                       <input id="lesson-file" type="file" className="hidden" onChange={handleFileChange} />
@@ -455,10 +474,10 @@ const CreateLesson = () => {
                   {loading ? (
                     <>
                       <Loader2 size={18} className="animate-spin" />
-                      Creating...
+                      Updating...
                     </>
                   ) : (
-                    "Create lesson"
+                    "Save changes"
                   )}
                 </button>
 
@@ -467,7 +486,7 @@ const CreateLesson = () => {
                   onClick={resetForm}
                   className="rounded-2xl border border-slate-300 px-5 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50"
                 >
-                  Clear
+                  Reset
                 </button>
               </div>
             </div>
@@ -506,6 +525,12 @@ const CreateLesson = () => {
                   )}
                 </div>
               )}
+
+              {lesson?.media?.url && !previewUrl && (
+                <div className="mt-4 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+                  Existing attached media is already stored for this lesson.
+                </div>
+              )}
             </div>
 
             <div className="rounded-3xl border border-slate-200 bg-slate-900 p-5 text-white shadow-sm">
@@ -513,15 +538,15 @@ const CreateLesson = () => {
               <div className="mt-4 space-y-3 text-sm text-slate-100">
                 <div className="flex items-start gap-2">
                   <CheckCircle2 size={16} className="mt-0.5 text-emerald-300" />
-                  Add a clear title so students know what to expect.
+                  Keep the title and description clear for students.
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle2 size={16} className="mt-0.5 text-emerald-300" />
-                  Use text lessons for notes, summaries, and guidance.
+                  Update text lessons when you want to refine the notes or instructions.
                 </div>
                 <div className="flex items-start gap-2">
                   <CheckCircle2 size={16} className="mt-0.5 text-emerald-300" />
-                  Upload a matching media file for video, image, or pdf materials.
+                  Use the order field to keep the syllabus flow consistent.
                 </div>
               </div>
             </div>
@@ -532,4 +557,4 @@ const CreateLesson = () => {
   );
 };
 
-export default CreateLesson;
+export default EditLesson;

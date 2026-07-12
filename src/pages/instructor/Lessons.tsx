@@ -1,8 +1,8 @@
 ﻿import { useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import { api } from '../../lib/api';
 import type { Lesson } from '../../types/instructorDashboard';
-import { Check, Download, Lock, Zap } from 'lucide-react';
+import { Check, Download, Lock, Loader2, Pencil, Trash2, Zap } from 'lucide-react';
 import Instruction from '../../components/Instruction'
 
 type LessonResponse = {
@@ -17,11 +17,13 @@ const tabs: Tab[] = [
 ]
 
 const LessonDetail = () => {
-  const { lessonId } = useParams<{ courseId: string; lessonId: string }>();
+  const { courseId, lessonId } = useParams<{ courseId: string; lessonId: string }>();
+  const navigate = useNavigate();
   const [lesson, setLesson] = useState<Lesson | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState("instruction");
+  const [isDeleting, setIsDeleting] = useState(false);
   const lessonMediaUrl = lesson?.media?.url ?? lesson?.mediaUrl;
 
   const getTypeBadgeClasses = () => {
@@ -75,7 +77,7 @@ const LessonDetail = () => {
           <iframe
             src={getYoutubeEmbedUrl(lessonMediaUrl)}
             title={lesson.title || "Lesson video"}
-            className="h-[280px] w-full md:h-[420px]"
+            className="h-70 w-full md:h-105"
             frameBorder="0"
             allowFullScreen
           />
@@ -111,7 +113,7 @@ const LessonDetail = () => {
           <iframe
             src={lessonMediaUrl}
             title={lesson.title || "Lesson PDF"}
-            className="w-full min-h-[420px]"
+            className="w-full min-h-105"
           />
         </div>
       );
@@ -142,6 +144,28 @@ const LessonDetail = () => {
     }
 
     return <p className="text-muted">No preview available for this lesson type.</p>;
+  };
+
+  const handleDeleteLesson = async () => {
+    if (!lessonId || !lesson) {
+      return;
+    }
+
+    const confirmed = window.confirm(`Delete "${lesson.title}"? This action cannot be undone.`);
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setIsDeleting(true);
+      await api.delete(`/lessons/${lessonId}`);
+      navigate(`/instructor/courses/${courseId}`);
+    } catch (deleteError) {
+      console.error('Failed to delete lesson', deleteError);
+      setError('Could not delete this lesson. Please try again.');
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   useEffect(() => {
@@ -253,6 +277,30 @@ const LessonDetail = () => {
             <div className="my-4 rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
               <h2 className="mb-4 text-xl font-bold text-slate-900">{lesson?.title}</h2>
               <div className="flex flex-col gap-3">
+                <Link to={`/instructor/${courseId}/lesson/${lessonId}/edit`}>
+                  <div className="flex items-center justify-center gap-2 rounded-full border border-slate-300 py-3 text-sm font-semibold text-slate-700 transition hover:bg-slate-50">
+                    <Pencil className="h-4 w-4" />
+                    <p>Edit Lesson</p>
+                  </div>
+                </Link>
+                <button
+                  type="button"
+                  onClick={handleDeleteLesson}
+                  disabled={isDeleting}
+                  className="flex items-center justify-center gap-2 rounded-full border border-red-200 bg-red-50 py-3 text-sm font-semibold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:opacity-70"
+                >
+                  {isDeleting ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      <p>Deleting...</p>
+                    </>
+                  ) : (
+                    <>
+                      <Trash2 className="h-4 w-4" />
+                      <p>Delete Lesson</p>
+                    </>
+                  )}
+                </button>
                 <Link to={""}>
                   <div className="flex items-center justify-center gap-2 rounded-full bg-emerald-50 py-3 text-sm font-semibold text-emerald-700">
                     <Check className="h-5 w-5 rounded-full bg-emerald-700 p-0.5 text-white" />
